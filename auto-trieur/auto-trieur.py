@@ -1,5 +1,5 @@
 import os
-
+import pyexcel_ods
 
 """
 Variables globales
@@ -71,6 +71,24 @@ def sort_dictionary(old_dict: dict, croissant=True) -> dict:
     return new_dict
 
 
+def get_sheet_data_ods(file_name):
+    """
+    Renvoit une liste des lignes de la première colonne du fichier
+    :param file_name:
+    :return:
+    """
+    sheet_list = pyexcel_ods.get_data(file_name)
+    for sheet in sheet_list.keys():  # la feuille intéressante est la première
+        current_sheet = sheet_list[sheet]
+        lines_list = []
+        for line in current_sheet:
+            if len(line) == 0:
+                lines_list.append("")
+            else:
+                lines_list.append(line[0])
+        return lines_list
+
+
 def start():
     """
     Fonction principale
@@ -99,22 +117,18 @@ def start():
     Récupération des filtres et triage dans l'ordre décroissant de la taille
     """
     dict_size_filters = {}
-    with open(_ref_board_name, "r") as file:
-        lines = file.readlines()
-        for num in range(1, len(lines)):  # regarde dans toutes les lignes sauf la première
-            line = lines[num]
-            component = line.split("\t")
-            current_filter = component[0]
-            if current_filter != "":
-                size = len(current_filter)
-                """
-                Range les filtres en fonction de leur tailles dans le dictionnaire
-                """
-                try:
-                    dict_size_filters[size].append(current_filter)
-                except:
-                    dict_size_filters[size] = [current_filter]
-        file.close()
+    filters_column = get_sheet_data_ods(_ref_board_name)
+    for num in range(1, len(filters_column)):  # regarde dans toutes les lignes sauf la première
+        line = filters_column[num]
+        if line != "":
+            size = len(line)
+            """
+            Range les filtres en fonction de leur tailles dans le dictionnaire
+            """
+            try:
+                dict_size_filters[size].append(line)
+            except:
+                dict_size_filters[size] = [line]
     sorted_filters = sort_dictionary(dict_size_filters, False)
 
     if len(dict_size_filters) == 0:
@@ -176,10 +190,4 @@ def start():
             os.rename(old_path, new_path)
 
 
-with open(_ref_board_name, "r", encoding="cp437") as file:
-    lines = file.readlines()
-    print(lines)
-    text = ""
-    for line in lines:
-        text += line
-    print(text)
+start()
