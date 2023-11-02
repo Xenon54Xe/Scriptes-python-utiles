@@ -151,15 +151,14 @@ def get_crypt_text(text: str, word: str, decrypt=False) -> str:
         word_car_num = ord(word[index])
         if decrypt:
             new_car_num = car_num - word_car_num - i
-            if new_car_num < 0:
+            while new_car_num < 0:
                 new_car_num += 256
         else:
             new_car_num = car_num + word_car_num + i
-            if new_car_num > 255:
+            while new_car_num > 255:
                 new_car_num -= 256
         new_car = chr(new_car_num)
         new_text += new_car
-
         index += 1
         if index >= max_index:
             index = 0
