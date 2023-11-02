@@ -1,3 +1,6 @@
+#! /usr/bin/env python311
+# -*- coding: utf-8 -*-
+
 import string
 from tkinter import *
 import os
@@ -240,6 +243,7 @@ window = Tk()
 window.title("Renamator")
 window.geometry("350x350")
 window.minsize(350, 230)
+window.iconbitmap("atome.ico")
 
 """
 Eléments dans main_frame

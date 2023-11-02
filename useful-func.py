@@ -1,3 +1,6 @@
+#! /usr/bin/env python311
+# -*- coding: utf-8 -*-
+
 
 import math
 
