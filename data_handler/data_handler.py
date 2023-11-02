@@ -22,7 +22,8 @@ class data_handler:
         self.file_name = file_name
         self.indicator = indicator
         self.user_text_list = []
-        self.user_separator = "////////////////////////////////////"
+        self.user_separator = ("zHGriPp5$`V9I1g9$dP3ù9YEbbVo5l%sL%kmB21LrB[y16{7C7C$sE%Y"
+                               "N'c>u^**cX4k4<,b'zFmQDr,_owt[SwjjO34(</c]p~m")
 
         self.update_text_list()
 
@@ -32,7 +33,6 @@ class data_handler:
         It's used in order to save data in file
         """
         with open(self.file_name, "w", encoding="utf-8") as file:
-            print(self.user_text_list)
             for i in range(len(self.user_text_list)):
                 line = self.user_text_list[i]
                 if len(self.user_text_list) > 1 and i != len(self.user_text_list) - 1:
@@ -58,7 +58,6 @@ class data_handler:
         self.user_text_list = text.split(self.user_separator)
         if self.user_text_list[0] == "":
             self.user_text_list = []
-        print(self.user_text_list)
 
     def get_file_name(self):
         return self.file_name
