@@ -7,23 +7,25 @@ recommended to use this as a way to crypt public data
 """
 
 import os
+import string
 
 _file_name = "data_handler.txt"
 
 _indicator = "__Well-decrypted-by-password-because-this-first-sentence-appear-miraculously-correctly__"
 
+_user_separator = "zHGriPp5$`V9I1g9$dP3ù9YEbbVo5l%sL%kmB21LrB[y16{7C7C$sE%YN'c>u^**cX4k4<,b'zFmQDr,_owt[SwjjO34(</c]p~m"
+
 
 class data_handler:
 
-    def __init__(self, file_name=_file_name, indicator=_indicator):
+    def __init__(self, file_name=_file_name, indicator=_indicator, user_separator=_user_separator):
         """
         Allow to interact with a crypt data file easily
         """
         self.file_name = file_name
         self.indicator = indicator
+        self.user_separator = user_separator
         self.user_text_list = []
-        self.user_separator = ("zHGriPp5$`V9I1g9$dP3ù9YEbbVo5l%sL%kmB21LrB[y16{7C7C$sE%Y"
-                               "N'c>u^**cX4k4<,b'zFmQDr,_owt[SwjjO34(</c]p~m")
 
         self.update_text_list()
 
@@ -119,8 +121,9 @@ class data_handler:
         """
         Add a new user in the text_list
         """
-        if password == "":
-            raise Exception("The password is empty !")
+        password_quality = find_password_quality(password)
+        if password_quality != "Good":
+            raise Exception(password_quality)
 
         user_index = self.get_user_index(password)
         if user_index != -1:
@@ -150,13 +153,14 @@ def get_crypt_text(text: str, word: str, decrypt=False) -> str:
         car_num = ord(car)
         word_car_num = ord(word[index])
         if decrypt:
-            new_car_num = car_num - word_car_num - i
+            new_car_num = car_num - word_car_num
             while new_car_num < 0:
                 new_car_num += 256
         else:
-            new_car_num = car_num + word_car_num + i
+            new_car_num = car_num + word_car_num
             while new_car_num > 255:
                 new_car_num -= 256
+
         new_car = chr(new_car_num)
         new_text += new_car
         index += 1
@@ -178,3 +182,37 @@ def get_word_index(text: str, word: str) -> int:
     if index == len(text):
         return -1
     return index
+
+
+def find_password_quality(password: str) -> str:
+    """
+    Return True if the password pass every test:
+    -
+    """
+    if len(password) < 8:
+        return "The password neet to be composed of 8 character or more"
+
+    wrong = True
+    for i in range(len(password) - 1):
+        first_letter = password[i]
+        second_letter = password[i + 1]
+        if first_letter != second_letter:
+            wrong = False
+    if wrong:
+        return "It's forbidden to use the same character for every character of the password"
+
+    letter = False
+    number = False
+    punctuation = False
+    for car in password:
+        if car in string.ascii_letters:
+            letter = True
+        if car in string.digits:
+            number = True
+        if car in string.punctuation + string.whitespace:
+            punctuation = True
+
+    if not (letter and number and punctuation):
+        return "The password need to be composed of letters, numbers and punctuations"
+
+    return "Good"
