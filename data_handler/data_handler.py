@@ -13,7 +13,7 @@ _file_name = "data_handler.txt"
 
 _indicator = "__Well-decrypted-by-password-because-this-first-sentence-appear-miraculously-correctly__"
 
-_user_separator = "zHGriPp5$`V9I1g9$dP3ù9YEbbVo5l%sL%kmB21LrB[y16{7C7C$sE%YN'c>u^**cX4k4<,b'zFmQDr,_owt[SwjjO34(</c]p~m"
+_user_separator = "EßÔ=áá¼=@êí_D¶÷CÁêÔeêK¯Æ¿ÂÉ,Oò|dñ×2THåjÞ/EV©x^ ÿáÒÈãJ·ë)lÓ]9/§=mÛs¸<>SÓÉ	òÈ¸ñÆ"
 
 
 class data_handler:
@@ -186,20 +186,12 @@ def get_word_index(text: str, word: str) -> int:
 
 def find_password_quality(password: str) -> str:
     """
-    Return True if the password pass every test:
-    -
+    Return Good if the password has succeeded every test:
+    - Length > 8
+    - Composed of letters, numbers and punctuations
     """
     if len(password) < 8:
         return "The password neet to be composed of 8 character or more"
-
-    wrong = True
-    for i in range(len(password) - 1):
-        first_letter = password[i]
-        second_letter = password[i + 1]
-        if first_letter != second_letter:
-            wrong = False
-    if wrong:
-        return "It's forbidden to use the same character for every character of the password"
 
     letter = False
     number = False
