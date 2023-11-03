@@ -1,5 +1,8 @@
-#! /usr/bin/env python311
-# -*- coding: utf-8 -*-
+
+"""
+# version: python311
+# coding: utf-8
+"""
 
 import os
 import pyexcel_ods
@@ -7,7 +10,6 @@ import pyexcel_ods
 """
 Variables globales
 """
-
 # __file__ est le chemin absolu du script
 _program_name = __file__.split("\\")[-1:][0]
 _ref_board_name = "reference.ods"

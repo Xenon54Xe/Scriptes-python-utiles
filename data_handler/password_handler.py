@@ -1,12 +1,13 @@
-#! /usr/bin/env python311
-# -*- coding: utf-8 -*-
 
 """
 Warning, the crypt method used in this scrypt is easily breakable, so it's not
 recommended to use this as a way to crypt public data
-"""
-import os
 
+# version: python311
+# coding: utf-8
+"""
+
+import os
 from data_handler import data_handler
 import tkinter as tk
 

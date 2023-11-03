@@ -1,9 +1,10 @@
-#! /usr/bin/env python311
-# -*- coding: utf-8 -*-
 
 """
 Warning, the crypt method used in this scrypt is easily breakable, so it's not
 recommended to use this as a way to crypt public data
+
+# version: python311
+# coding: utf-8
 """
 
 import os

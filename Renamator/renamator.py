@@ -8,7 +8,7 @@ import os
 """
 Variables globales
 """
-modes = ["Rename", "Add", "Remove"]
+_modes = ["Rename", "Add", "Remove"]
 
 
 def take_numbers(text: str) -> list[int]:
@@ -138,7 +138,7 @@ def rename_folders(abs_path: str, folder_type_list: list, choose_name: str, mode
                 aussi au début de testt
     """
     folder_counter = 0
-    if mode == modes[0]:
+    if mode == _modes[0]:
         print("Counter...")
         for folder in folder_list:
             if folder[:name_size] == choose_name:
@@ -161,11 +161,11 @@ def rename_folders(abs_path: str, folder_type_list: list, choose_name: str, mode
 
                 old_folder = f"{abs_path}\\{folder}"
                 new_folder = ""
-                if mode == modes[0]:
+                if mode == _modes[0]:
                     new_folder = f"{abs_path}\\{choose_name}_{folder_counter}{folder_type}"
-                elif mode == modes[1]:
+                elif mode == _modes[1]:
                     new_folder = f"{abs_path}\\{choose_name}{folder_name}{folder_type}"
-                elif mode == modes[2] and folder_name[:name_size] == choose_name:
+                elif mode == _modes[2] and folder_name[:name_size] == choose_name:
                     new_folder = f"{abs_path}\\{folder_name[name_size:]}{folder_type}"
 
                 if new_folder != "":
@@ -202,7 +202,7 @@ def adjust_data(path: str, types: str, name: str, mode: str):
             raise Exception("Le nouveau nom des fichiers ne doit pas contenir d'autre charactères "
                             "que des lettres et des chiffres")
 
-    if mode not in modes:
+    if mode not in _modes:
         raise Exception("Le mode spécifié n'est pas conforme")
 
     return path, type_list, name, mode
@@ -219,11 +219,11 @@ def start():
 
     def get_mode():
         if rename_bool.get():
-            return modes[0]
+            return _modes[0]
         elif add_bool.get():
-            return modes[1]
+            return _modes[1]
         elif remove_bool.get():
-            return modes[2]
+            return _modes[2]
     mode = get_mode()
 
     try:
@@ -322,9 +322,9 @@ check_tracer_id_list = []
 
 def set_check_button_tracer(set_button=True):
     if set_button:
-        rename_tracer_id = rename_bool.trace("w", lambda *args: on_check_selected(modes[0]))
-        add_tracer_id = add_bool.trace("w", lambda *args: on_check_selected(modes[1]))
-        remove_tracer_id = remove_bool.trace("w", lambda *args: on_check_selected(modes[2]))
+        rename_tracer_id = rename_bool.trace("w", lambda *args: on_check_selected(_modes[0]))
+        add_tracer_id = add_bool.trace("w", lambda *args: on_check_selected(_modes[1]))
+        remove_tracer_id = remove_bool.trace("w", lambda *args: on_check_selected(_modes[2]))
         check_tracer_id_list.append(rename_tracer_id)
         check_tracer_id_list.append(add_tracer_id)
         check_tracer_id_list.append(remove_tracer_id)
@@ -337,15 +337,15 @@ def set_check_button_tracer(set_button=True):
 
 def on_check_selected(name):
     set_check_button_tracer(False)
-    if name == modes[0]:
+    if name == _modes[0]:
         add_bool.set(False)
         remove_bool.set(False)
         text_label_name.set("Nom à donner aux fichiers")
-    elif name == modes[1]:
+    elif name == _modes[1]:
         rename_bool.set(False)
         remove_bool.set(False)
         text_label_name.set("Texte à ajouter au début du nom des fichiers")
-    elif name == modes[2]:
+    elif name == _modes[2]:
         rename_bool.set(False)
         add_bool.set(False)
         text_label_name.set("Texte à supprimer du début du nom des fichiers")
