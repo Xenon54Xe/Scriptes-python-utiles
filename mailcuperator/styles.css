@@ -1,0 +1,44 @@
+/* styles.css */
+
+/* Styles pour le header */
+header {
+    background-color: #f2f2f2;
+    padding: 20px;
+    text-align: center;
+}
+
+h1 {
+    color: #333333;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+}
+
+nav ul li {
+    display: inline;
+    margin-right: 20px;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: #555555;
+}
+
+nav ul li a:hover {
+    color: #000000;
+}
+
+/* Styles pour les sections */
+section {
+    padding: 40px;
+}
+
+/* Styles pour le footer */
+footer {
+    background-color: #333333;
+    color: #ffffff;
+    text-align: center;
+    padding: 10px;
+}
