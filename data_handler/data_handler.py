@@ -10,7 +10,7 @@ recommended to use this as a way to crypt public data
 import os
 import string
 
-_file_name = "data_handler.txt"
+_file_name = "password_handler.txt"
 
 _indicator = "__Well-decrypted-by-password-because-this-first-sentence-appear-miraculously-correctly__"
 
