@@ -8,10 +8,10 @@ recommended to use this as a way to crypt public data
 """
 
 import os
-from data_handler import data_handler
+import data_handler.data_handler as dh
 import tkinter as tk
 
-_data_h = data_handler("crypt.txt")
+_data_h = dh.data_handler("crypt.txt")
 _info_file_name = "information.txt"
 _current_password = ""
 

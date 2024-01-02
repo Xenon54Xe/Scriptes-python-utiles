@@ -1,15 +1,11 @@
-# using python 3.6
-# encoding utf-8
+# using: python 3.6
+# coding: utf-8
 
 """
 Essaye de trouver l'extension recherchée dans les dossiers visés
 """
 
 import os
-
-
-path = "C:\\Users\\Titouan\\Documents\\Sony"  # dossier contenant les dossiers à fouiller
-extension = ".txt"  # extension à trouver
 
 
 class ExtensionFinder:
@@ -36,8 +32,3 @@ class ExtensionFinder:
         self.take_extension_paths(path)
         self.open_folder(path)
         return self.extension_paths
-
-
-finder = ExtensionFinder()
-found = finder.find_extension(path, extension)
-print(found)

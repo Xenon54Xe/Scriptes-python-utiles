@@ -16,12 +16,12 @@ import imaplib
 import email
 import webbrowser
 
-import data_handler_not_crypted
+import data_handler.data_handler_not_crypted as data_handler_nc
 
 # data base creation
 _abs_path = os.path.abspath("")
 _account_path = f"{_abs_path}\\account_handler"
-_dh = data_handler_not_crypted.data_handler(_account_path)
+_dh = data_handler_nc.data_handler(_account_path)
 
 # use your email provider's IMAP server, you can look for your provider's IMAP server on Google
 # or check this page: https://www.systoolsgroup.com/imap/

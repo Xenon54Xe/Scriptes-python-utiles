@@ -10,7 +10,9 @@ recommended to use this as a way to crypt public data
 import os
 import string
 
-_file_name = "password_handler.txt"
+_abs_path = os.path.abspath("")
+
+_file_path = f"{_abs_path}\\password_handler.txt"
 
 _indicator = "__Well-decrypted-by-password-because-this-first-sentence-appear-miraculously-correctly__"
 
@@ -19,14 +21,18 @@ _user_separator = "EßÔ=áá¼=@êí_D¶÷CÁêÔeêK¯Æ¿ÂÉ
 
 class data_handler:
 
-    def __init__(self, file_name=_file_name, indicator=_indicator, user_separator=_user_separator):
+    def __init__(self, file_path=_file_path, indicator=_indicator, user_separator=_user_separator):
         """
         Allow to interact with a crypt data file easily
         """
-        self.file_name = file_name
+        self.file_path = file_path
         self.indicator = indicator
         self.user_separator = user_separator
         self.user_text_list = []
+
+        if not os.path.exists(file_path):
+            with open(file_path, "wb") as file:
+                pass
 
         self.update_text_list()
 
@@ -35,7 +41,7 @@ class data_handler:
         This function will replace the data in file by the data of text_list
         It's used in order to save data in file
         """
-        with open(self.file_name, "w", encoding="utf-8") as file:
+        with open(self.file_path, "w", encoding="utf-8") as file:
             for i in range(len(self.user_text_list)):
                 line = self.user_text_list[i]
                 if len(self.user_text_list) > 1 and i != len(self.user_text_list) - 1:
@@ -49,11 +55,11 @@ class data_handler:
 
         This function will replace the data in text_list by the data of file
         """
-        if not os.path.isfile(self.file_name):
-            raise Exception(f"{self.file_name} is missing")
+        if not os.path.isfile(self.file_path):
+            raise Exception(f"{self.file_path} is missing")
 
         text = ""
-        with open(self.file_name, "r", encoding="utf-8") as file:
+        with open(self.file_path, "r", encoding="utf-8") as file:
             for i in file.readlines():
                 text += i
             file.close()
@@ -63,7 +69,7 @@ class data_handler:
             self.user_text_list = []
 
     def get_file_name(self):
-        return self.file_name
+        return self.file_path
 
     def get_indicator(self):
         return self.indicator
