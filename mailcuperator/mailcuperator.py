@@ -16,7 +16,7 @@ import imaplib
 import email
 import webbrowser
 
-import data_handler.data_handler_not_crypted as data_handler_nc
+import data_handler_not_crypted as data_handler_nc
 
 # data base creation
 _abs_path = os.path.abspath("")
@@ -219,7 +219,7 @@ def main(user_email, user_mdp, folder_target, imap_server, start_time: float):
     try:
         mail.login(user_email, user_mdp)
     except:
-        print("Mail ou mot de passe invalide !")
+        print("Mail ou mot de passe invalide ! Essayez de recommencer.")
         return "Erase", 0, 0
 
     try:

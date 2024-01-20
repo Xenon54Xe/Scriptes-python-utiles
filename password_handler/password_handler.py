@@ -8,7 +8,7 @@ recommended to use this as a way to crypt public data
 """
 
 import os
-import data_handler.data_handler as dh
+import data_handler as dh
 import tkinter as tk
 
 _data_h = dh.data_handler("crypt.txt")

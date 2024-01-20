@@ -3,30 +3,61 @@
 
 
 import math
+import random
+import time
 
 
-def sort_list(old_list: list, croissant=True) -> list:  # check
+def quicksort(lst: list):
     """
-    Sort a list of number
-    :param old_list:
-    :param croissant:
-    :return:
-    """
-    new_list = []
-    for num in old_list:
-        if len(new_list) == 0:
-            new_list.append(num)
-            continue
+    Sort a list quickly without returning anything (recursive)
 
-        index = 0
-        if croissant:
-            while index < len(new_list) and num > new_list[index]:
-                index += 1
+    Complexité: nlog(n) dans le meilleur des cas, n² sinon
+    n est la taille de la liste considérée
+    """
+    if len(lst) < 2:
+        return
+    pivot = lst.pop()
+    small, tall = [], []
+    for i in range(len(lst)):
+        x = lst.pop()
+        if x <= pivot:
+            small.append(x)
         else:
-            while index < len(new_list) and num < new_list[index]:
-                index += 1
-        new_list.insert(index, num)
-    return new_list  #
+            tall.append(x)
+
+    quicksort(small)
+    quicksort(tall)
+
+    # Partie changée
+    lst += small + [pivot] + tall
+
+
+def myquicksort(lst):
+    """
+    Version intéressante de quicksort lorsque les nombres contenus dans la liste n'ont
+    pas un écart relatif trop élevé
+
+    Inconvénients: permet de trier uniquement les entiers relatifs
+
+    Complexité: 2(n + max_value - min_value)
+    n est la taille de la liste considérée
+
+    Pour l'instant la fonction écrase les doublons et n'est pas optimisée quand l'écart relatif
+    maximal entre les valeurs est trop grand
+    """
+    mini, maxi = min(lst), max(lst)
+
+    nb_e_max = maxi - mini + 1
+    add = -mini
+    mirror = ["0" for i in range(nb_e_max)]
+    for e in lst:
+        mirror[e + add] = e
+
+    nl = []
+    for e in mirror:
+        if e != "0":
+            nl.append(e)
+    return mirror
 
 
 def sort_dictionary(old_dict: dict, croissant=True) -> dict:  # check
