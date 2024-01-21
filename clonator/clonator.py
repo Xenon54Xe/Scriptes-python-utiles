@@ -1,73 +1,71 @@
 """
-Le but est de créer un cheval de troie qui, lorsque ce fichier sera appelé, créera un fichier nommé correction.py
-dont la partie infectée doit rester invisible
+Le but est de créer un cheval de troie qui, lorsque ce fichier sera appelé,
+créera un fichier nommé correction.py dont la partie infectée doit rester invisible
 """
-# voicicommentcréerunefonction!
 
 
-def remove_text(text, simili_borne):
-    """
-    La borne considérée est la simili_borne + !
-    """
-    borne = simili_borne + "!"
-    nb, size = len(text), len(borne)
+# don't look !
+def occurences(text, mot):
+    lst = []
+    for i in range(len(text) - len(mot) + 1):
+        e = text[i:i+len(mot)]
+        if e == mot:
+            lst.append(i)
+    return lst
 
-    index = -1
-    index_list = []
-    for i in range(nb - size + 1):
-        part = text[i: i + size]
-        if index == -1 and part == borne:
-            index = i
-            index_list.append(i)
-        elif part == borne:
-            index = -1
-            index_list.append(i + size + 1)
 
-    if len(index_list) % 2 != 0 or len(index_list) == 0:
-        raise Exception(f"Le nombre de bornes ({len(index_list)}) doit être un nombre pair supérieur à 0")
+def vire_borne(text, borne):
+    index_list = occurences(text, borne)
+    nb_borne = len(index_list)
 
-    if len(index_list) == 2:
+    if nb_borne % 2 != 0 or nb_borne == 0:
+        raise Exception(f"Le nombre de bornes ({nb_borne}) doit être un nombre pair supérieur à 0")
+
+    if nb_borne == 2:
         a, b = index_list[0], index_list[1]
-        return text[:a] + text[b:]
+        return text[:a-1] + text[b + len(borne) + 1:]
 
     new_text = ""
-    for i in range(len(index_list) - 1):
-        if i == 0:
-            a = 0
-            b = index_list[0]
-        elif 0 < i * 2 < len(index_list):
-            a = index_list[i * 2 - 1]
-            b = index_list[i * 2]
-        else:
-            a = index_list[len(index_list) - 1]
-            b = len(text) + 1
-        new_text += text[a:b]
+    a, b = 0, index_list[0]
+    to_add = text[a:b-1]
+    new_text += to_add
+
+    nb_trunc = nb_borne // 2
+    for i in range(0, nb_trunc - 1):
+        print(i)
+        a, b = index_list[i * 2 + 1], index_list[i * 2 + 2]
+        to_add = text[a + len(borne):b-1]
+        new_text += to_add
+
+    a, b = index_list[-1], len(text)
+    to_add = text[a + len(borne):b]
+    new_text += to_add
 
     return new_text
 
 
 def appelle_moi():
-    with open("correction.py", "w", encoding="utf-8") as file:
-        with open("clonator.py", "r", encoding="utf-8") as source:
-            text = source.read()
-            text = remove_text(text, "# voicicommentcréerunefonction")
-        file.write(str(text))
+    with open("clonator.py", "r", encoding="utf-8") as source:
+        data = source.read()
+    deli = "!"
+    data = vire_borne(data, f"# don't look {deli}")
+    print(data)
+    with open("troll.py", "w", encoding="utf-8") as file:
+        file.write(data)
 
 
-# voicicommentcréerunefonction!
-
-
+# don't look !
 def triage(L):
-    # voicicommentcréerunefonction!
+# don't look !
     appelle_moi()
-    # voicicommentcréerunefonction!
+# don't look !
     return sorted(L)
 
 
 x = triage([1, 5, 6, 2, 8, 0])
 print(x)
-# voicicommentcréerunefonction!
+# don't look !
 """
 J'écris des conneries a longueur de journée
 """
-# voicicommentcréerunefonction!
+# don't look !
