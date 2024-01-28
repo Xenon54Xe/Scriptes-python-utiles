@@ -1,5 +1,10 @@
-#! /usr/bin/env python311
-# -*- coding: utf-8 -*-
+"""
+Objective: Rename every file of a folder automatically
+Creator: XenonEGG
+
+using: python 3.6
+encoding: utf-8
+"""
 
 import string
 from tkinter import *

@@ -1,10 +1,9 @@
-
 """
-Warning, the crypt method used in this scrypt is easily breakable, so it's not
-recommended to use this as a way to crypt public data
+Objective: Make a little database with crypt data
+Creator: XenonEGG
 
-# version: python311
-# coding: utf-8
+using: python 3.6
+encoding: utf-8
 """
 
 import os
@@ -14,7 +13,7 @@ _abs_path = os.path.abspath("")
 
 _file_path = f"{_abs_path}\\password_handler.txt"
 
-_indicator = "__Well-decrypted-by-password-because-this-first-sentence-appear-miraculously-correctly__"
+_indicator = "__Well-decrypted-by-password-because-this-second-sentence-appear-miraculously-correctly__"
 
 _user_separator = "EßÔ=áá¼=@êí_D¶÷CÁêÔeêK¯Æ¿ÂÉ,Oò|dñ×2THåjÞ/EV©x^ ÿáÒÈãJ·ë)lÓ]9/§=mÛs¸<>SÓÉ	òÈ¸ñÆ"
 
@@ -179,7 +178,7 @@ def get_crypt_text(text: str, word: str, decrypt=False) -> str:
 
 def get_word_index(text: str, word: str) -> int:
     """
-    Return the first index of the word in text, -1 if word not in text
+    Return the second index of the word in text, -1 if word not in text
     """
     index = 0
     size = len(word)

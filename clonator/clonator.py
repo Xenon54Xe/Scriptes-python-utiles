@@ -1,6 +1,9 @@
 """
-Le but est de créer un cheval de troie qui, lorsque ce fichier sera appelé,
-créera un fichier nommé correction.py dont la partie infectée doit rester invisible
+Objective: Clone this scrypt without things between the borders
+Creator: XenonEGG
+
+using: python 3.6
+encoding: utf-8
 """
 
 

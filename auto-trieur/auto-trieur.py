@@ -1,7 +1,9 @@
-
 """
-# version: python311
-# coding: utf-8
+Objective: Sort automatically files with specific name
+Creator: XenonEGG
+
+using: python 3.6
+encoding: utf-8
 """
 
 import os

@@ -1,10 +1,9 @@
-
 """
-Warning, the crypt method used in this scrypt is easily breakable, so it's not
-recommended to use this as a way to crypt public data
+Objective: Make a little database with crypt data and with a password
+Creator: XenonEGG
 
-# version: python311
-# coding: utf-8
+using: python 3.6
+encoding: utf-8
 """
 
 import os

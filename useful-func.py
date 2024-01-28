@@ -1,13 +1,15 @@
-#! /usr/bin/env python311
-# -*- coding: utf-8 -*-
+"""
+Objective: Make useful functions
+Creator: XenonEGG
 
+using: python 3.6
+encoding: utf-8
+"""
 
 import math
-import random
-import time
 
 
-def quicksort(lst: list):
+def quicksort(lst: list, croissant=True):  # check
     """
     Sort a list quickly without returning anything (recursive)
 
@@ -25,39 +27,13 @@ def quicksort(lst: list):
         else:
             tall.append(x)
 
-    quicksort(small)
-    quicksort(tall)
+    quicksort(small, croissant)
+    quicksort(tall, croissant)
 
-    # Partie changée
-    lst += small + [pivot] + tall
-
-
-def myquicksort(lst):
-    """
-    Version intéressante de quicksort lorsque les nombres contenus dans la liste n'ont
-    pas un écart relatif trop élevé
-
-    Inconvénients: permet de trier uniquement les entiers relatifs
-
-    Complexité: 2(n + max_value - min_value)
-    n est la taille de la liste considérée
-
-    Pour l'instant la fonction écrase les doublons et n'est pas optimisée quand l'écart relatif
-    maximal entre les valeurs est trop grand
-    """
-    mini, maxi = min(lst), max(lst)
-
-    nb_e_max = maxi - mini + 1
-    add = -mini
-    mirror = ["0" for i in range(nb_e_max)]
-    for e in lst:
-        mirror[e + add] = e
-
-    nl = []
-    for e in mirror:
-        if e != "0":
-            nl.append(e)
-    return mirror
+    if croissant:
+        lst += small + [pivot] + tall
+    else:
+        lst += tall + [pivot] + small
 
 
 def sort_dictionary(old_dict: dict, croissant=True) -> dict:  # check
@@ -71,7 +47,8 @@ def sort_dictionary(old_dict: dict, croissant=True) -> dict:  # check
     for old_key in old_dict.keys():
         old_keys.append(old_key)
 
-    new_keys = sort_list(old_keys, croissant)
+    new_keys = old_keys.copy()
+    quicksort(new_keys, croissant)
 
     new_dict = {}
     for new_key in new_keys:
@@ -197,7 +174,7 @@ def sort_any_dictionary(old_dict: dict, croissant=True) -> dict:  # check
     return {}
 
 
-def convert(start_base: int, target_base: int, number: str) -> str:
+def convert(start_base: int, target_base: int, number: int) -> str:  # check
     """
     Convert a number from the start_base to the target_base
     :param start_base:
@@ -245,7 +222,7 @@ def convert(start_base: int, target_base: int, number: str) -> str:
     }
     inverted_ref = reverse_dictionary(ref)
 
-    if not 2 <= start_base <= 35 or not 2 <= target_base <= 35 or start_base == target_base:
+    if not 2 <= start_base <= 35 or not 2 <= target_base <= 35:
         raise Exception("The bases need to be between the base 2 and the base 35")
 
     """
@@ -255,6 +232,7 @@ def convert(start_base: int, target_base: int, number: str) -> str:
     for i in inverted_ref.keys():
         keys.append(i)
 
+    number = str(number)
     for i in number:
         if i not in keys[:start_base]:
             raise Exception(f"{number} in base {start_base} isn't correct")
@@ -278,3 +256,100 @@ def convert(start_base: int, target_base: int, number: str) -> str:
         value //= target_base
 
     return result
+
+
+def sorting_function():
+    """
+    def myquicksort(lst):
+        Version intéressante de quicksort lorsque les nombres contenus dans la liste n'ont
+        pas un écart relatif trop élevé
+
+        Inconvénients: permet de trier uniquement les entiers relatifs
+
+        Complexité: 2(n + max_value - min_value)
+        n est la taille de la liste considérée
+
+        Pour l'instant la fonction écrase les doublons et n'est pas optimisée quand l'écart relatif
+        maximal entre les valeurs est trop grand
+
+        mini, maxi = min(lst), max(lst)
+
+        nb_e_max = maxi - mini + 1
+        add = -mini
+        mirror = ["0" for i in range(nb_e_max)]
+        for e in lst:
+            mirror[e + add] = e
+
+        nl = []
+        for e in mirror:
+            if e != "0":
+                nl.append(e)
+        return mirror
+
+
+    def tri_insertion(L):
+        i = 1
+        while i < len(L):
+            e = L[i]
+            j = 0
+            while e >= L[j] and j < i:
+                j += 1
+            L[i], L[j] = L[j], L[i]
+            if j != i:
+                i -= 1
+            i += 1
+
+
+    def tri_bulle(L):
+        mini, maxi = 0, len(L)
+        while mini < maxi:
+            for i in range(mini, maxi - 1):
+                a, b = L[i], L[i+1]
+                if a > b:
+                    L[i], L[i+1] = L[i+1], L[i]
+            for i in range(maxi - 1, mini, -1):
+                a, b = L[i], L[i - 1]
+                if a < b:
+                    L[i], L[i - 1] = L[i - 1], L[i]
+            mini += 1
+            maxi -= 1
+
+
+    def tri_selection(L):
+        for i in range(len(L)):
+            smaller = i
+            for j in range(i, len(L)):
+                if L[j] < L[smaller]:
+                    smaller = j
+            L[i], L[smaller] = L[smaller], L[i]
+
+
+    def tri_fusion(L):
+        if len(L) == 1:
+            return L
+
+        mil = len(L) // 2
+        left, right = L[:mil], L[mil:]
+        left = tri_fusion(left)
+        right = tri_fusion(right)
+
+        return fusion(left, right)
+
+
+    def fusion(P, Q):
+        T, pi, qi = [], 0, 0
+        np, nq = len(P), len(Q)
+        while np > pi and nq > qi:
+            if P[pi] < Q[qi]:
+                T.append(P[pi])
+                pi += 1
+            else:
+                T.append(Q[qi])
+                qi += 1
+        if np > pi:
+            T += P[pi:]
+        else:
+            T += Q[qi:]
+        return T
+    """
+    pass

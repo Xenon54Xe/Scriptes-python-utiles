@@ -1,10 +1,9 @@
-
 """
-A 'little' program made to extract the files of your mail
-and store it in a folder named files_keeper
+Objective: Take every file from mails
+Creator: XenonEGG
 
-# version: python 3.6
-# coding: utf-8
+using: python 3.6
+encoding: utf-8
 """
 
 import os
