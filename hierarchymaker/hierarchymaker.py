@@ -53,6 +53,9 @@ class HierarchyFile(HierarchyEntity):
     def __init__(self, name, path, depth):
         super().__init__(name, path, depth)
 
+    def get_copy(self):
+        return HierarchyFile(self.name, self.path, self.depth)
+
 
 class HierarchyFolder(HierarchyEntity):
     def __init__(self, name, path, depth):
@@ -66,9 +69,12 @@ class HierarchyFolder(HierarchyEntity):
         return self.entity_list[index]
 
     def get_copy(self):
-        entity = HierarchyFolder(self.name, self.path, self.depth)
-        entity.set_list(self.entity_list)
-        return entity
+        new_entity = HierarchyFolder(self.name, self.path, self.depth)
+        nl = []
+        for entity in self.get_entity_list():
+            nl.append(entity.get_copy())
+        new_entity.set_list(nl)
+        return new_entity
 
     def set_list(self, lst: list):
         self.entity_list = lst.copy()
@@ -376,19 +382,19 @@ def sort_file_and_folder(lib: list, path: str):
         i += 1
         time += 1
 
-
 """
 source = os.path.abspath("../..")
 hierarchy = HierarchyMaker(source)
 
 file_name_f = Filter("file_name", True, [])
 extension_f = Filter("extension", True, [])
-folder_name_fb = Filter("folder_name", False, [])
+folder_name_fb = Filter("folder_name", False, ["venv", ".git"])
 folder_name_fw = Filter("folder_name", True, [])
 depth_f = Filter("depth", True, [])
 filter_list = [folder_name_fb, folder_name_fw, extension_f, file_name_f, depth_f]
 
 text = hierarchy.get_hierarchy_normalised_text(filter_list)
+text_b = hierarchy.get_hierarchy_normalised_text()
 
 with open("hierarchy.txt", "w", encoding="utf-8") as file:
     file.write(text)
