@@ -12,7 +12,7 @@ import os
 class Filter:
     def __init__(self, typ: str, white_list: bool, filter_list: list):
         """
-        Allowed filter: file_name, extension, folder_name, depth
+        A class representing filters used in HierarchyMaker
         """
         if typ not in ["file_name", "extension", "folder_name", "depth"]:
             raise f"{typ} filter type is not allowed"
@@ -30,8 +30,11 @@ class Filter:
         return self.filter_list
 
 
-class HierarchyEntity:
+class HierarchyObject:
     def __init__(self, name, path, depth):
+        """
+        The main class representing objects used in HierarchyMaker
+        """
         self.name = name
         self.path = path
         self.depth = depth
@@ -46,78 +49,110 @@ class HierarchyEntity:
         return self.depth
 
     def get_copy(self):
-        return HierarchyEntity(self.name, self.path, self.depth)
+        """
+        Return a full copy of the object
+        """
+        return HierarchyObject(self.name, self.path, self.depth)
 
 
-class HierarchyFile(HierarchyEntity):
+class HierarchyFile(HierarchyObject):
     def __init__(self, name, path, depth):
+        """
+        A class representing file used in HierarchyMaker
+        """
         super().__init__(name, path, depth)
 
     def get_copy(self):
+        """
+        Return a full copy of the file
+        """
         return HierarchyFile(self.name, self.path, self.depth)
 
 
-class HierarchyFolder(HierarchyEntity):
+class HierarchyFolder(HierarchyObject):
     def __init__(self, name, path, depth):
+        """
+        A class representing folder used in HierarchyMaker
+        """
         super().__init__(name, path, depth)
         self.entity_list = []
 
     def get_entity_list(self) -> list:
+        """
+        Return the list of entity stored in the folder
+        """
         return self.entity_list
 
     def get_entity(self, index):
+        """
+        Return the entity with index
+        """
         return self.entity_list[index]
 
     def get_copy(self):
+        """
+        Return a full copy of the folder (the others hierarchy-objects stored in are copied too)
+        """
         new_entity = HierarchyFolder(self.name, self.path, self.depth)
         nl = []
         for entity in self.get_entity_list():
             nl.append(entity.get_copy())
-        new_entity.set_list(nl)
+        new_entity.set_entity_list(nl)
         return new_entity
 
-    def set_list(self, lst: list):
+    def set_entity_list(self, lst: list):
         self.entity_list = lst.copy()
 
-    def add_entity(self, entity: HierarchyEntity):
+    def add_entity(self, entity: HierarchyObject):
         self.entity_list.append(entity)
 
-    def insert_entity(self, index: int, entity: HierarchyEntity):
+    def insert_entity(self, index: int, entity: HierarchyObject):
         self.entity_list.insert(index, entity)
 
-    def remove_entity(self, entity: HierarchyEntity):
+    def remove_entity(self, entity: HierarchyObject):
         self.entity_list.remove(entity)
 
     def pop_entity(self, index: int):
         self.entity_list.pop(index)
 
-    def clear(self):
+    def clear_entity_list(self):
         self.entity_list.clear()
 
 
 class HierarchyMaker:
     def __init__(self, source_path: str,  file_arrow: str = "--->", folder_arrow: str = ">   ", tab: str = "    "):
         """
-        Make a hierarchy-object representing the folder's hierarchy and allow to get it or its representative string filtered or not
+        Use the classes HierarchyObject and Filter to make an object representing the file's hierarchy
+        in you computer
 
         Step:
             - update(source_path) iterate over every folder in the root folder
-            - get_hierarchy_folder(filter_list) -> get the list filtered or not
-            - get_hierarchy_normalised_text(filter_list) -> get the string representing the list
+            - get_hierarchy_folder(filter_list): get the list filtered or not
+            - get_hierarchy_normalised_text(filter_list): get the string representing the list
+        """
+
+        """
+        Variables used to print the hierarchy
         """
         self.file_arrow = file_arrow
         self.folder_arrow = folder_arrow
         self.tab = tab
 
+        """
+        Variables used to make the hierarchy
+        """
         self.source_path = None
         self.source_name = None
         self.hierarchy_folder: HierarchyFolder = HierarchyFolder("", "", -1)
         self.hierarchy_normalised_text = ""
 
+        """
+        Variables about the hierarchy
+        """
         self.max_depth = 0
         self.folder_count = 0
         self.file_count = 0
-        self.path_list = []
+        self.data_list = []  # A list storing type (File, Folder) and path of files/folders
 
         self.update(source_path)
 
@@ -161,21 +196,18 @@ class HierarchyMaker:
                 filter_list = [e.replace(".", "") for e in filter_list]
 
             if len(filter_list) != 0:
-                self.path_list.clear()
+                self.data_list.clear()
                 self.clean_hierarchy_object(hierarchy_folder_copy, filter_type, filter_list, white_list)
                 if filter_type == "folder_name" and white_list or filter_type == "depth":
                     # obligé de copier la liste lorsqu'on utilise convert_path_list
-                    hierarchy_folder_copy = convert_path_list_to_hierarchy_list(self.source_path, self.path_list)
+                    hierarchy_folder_copy = convert_path_list_to_hierarchy_list(self.source_path, self.data_list)
 
         return hierarchy_folder_copy
 
     def clean_hierarchy_object(self, root: HierarchyFolder, filter_type: str, filter_list: list, white_list: bool = True):
         """
-        Clean the hierarchy-normalised list using filters
-
-        root: hierarchy-normalised list
+        Clean the hierarchy-object using filters
         """
-
         if filter_type == "file_name":
             i = 0
             while i < len(root.get_entity_list()):
@@ -218,7 +250,7 @@ class HierarchyMaker:
                         i -= 1
 
                 elif typ == HierarchyFolder:
-                    self.clean_hierarchy_object(entity, filter_type, filter_list, white_list)  # list in the i-ème element
+                    self.clean_hierarchy_object(entity, filter_type, filter_list, white_list)
                     if len(entity.get_entity_list()) == 0:
                         root.pop_entity(i)
                         i -= 1
@@ -226,7 +258,7 @@ class HierarchyMaker:
 
         if filter_type == "folder_name":
             i = 0
-            path_list = []
+            data_list = []
             while i < len(root.get_entity_list()):
                 entity = root.get_entity(i)
                 name = entity.get_name()
@@ -236,7 +268,7 @@ class HierarchyMaker:
                         path = entity.get_path()
                         for filter_string in filter_list:
                             if filter_string in path:
-                                path_list.append(path)
+                                data_list.append((type(entity), path))
                                 break
                     elif type(entity) == HierarchyFolder:
                         self.clean_hierarchy_object(entity, filter_type, filter_list, white_list)
@@ -248,19 +280,18 @@ class HierarchyMaker:
                     else:
                         self.clean_hierarchy_object(root.get_entity(i), filter_type, filter_list, white_list)
                 i += 1
-            self.path_list += path_list
+            self.data_list += data_list
 
         if filter_type == "depth":
-            path_list = []
+            data_list = []
             for entity in root.get_entity_list():
-                if type(entity) == HierarchyFile:
-                    depth = entity.get_depth()
-                    if white_list and depth in filter_list or not white_list and depth not in filter_list:
-                        path = entity.get_path()
-                        path_list.append(path)
-                else:
+                depth = entity.get_depth()
+                if white_list and depth in filter_list or not white_list and depth not in filter_list:
+                    path = entity.get_path()
+                    data_list.append((type(entity), path))
+                if type(entity) == HierarchyFolder:
                     self.clean_hierarchy_object(entity, filter_type, filter_list, white_list)
-            self.path_list += path_list
+            self.data_list += data_list
 
     def get_hierarchy_normalised_text(self, filter_list: list = None) -> str:
         """
@@ -272,7 +303,7 @@ class HierarchyMaker:
 
     def fill_hierarchy_object(self, source_path: str, root: HierarchyFolder, depth: int = 1):
         """
-        Use hierarchy-object list to store the folder's hierarchy
+        Use hierarchy-object to store the folder's hierarchy
 
         source_path: The folder's path where the hierarchy begin
         """
@@ -319,6 +350,9 @@ class HierarchyMaker:
 
 
 def split_path(path: str, cut: str) -> list:
+    """
+    Return the path in a list and remove the first part of the path
+    """
     nl = []
     while os.path.split(path)[-1] != "":
         x, y = os.path.split(path)
@@ -329,19 +363,33 @@ def split_path(path: str, cut: str) -> list:
     return nl
 
 
-def convert_path_list_to_hierarchy_list(global_root_path: str, path_list: list) -> HierarchyFolder:
-    global_root_name = os.path.split(global_root_path)[-1]
-    hierarchy_list = HierarchyFolder(global_root_name, global_root_path, 0)
+def convert_path_list_to_hierarchy_list(source_path: str, data_list: list) -> HierarchyFolder:
+    """
+    Convert a list of path into a HierarchyFolder
 
-    for current_path in path_list:
-        target_folders = split_path(current_path, global_root_name)[1:]
+    source_path: the folder where begin the HierarchyFolder
+    data_list: a list of tuples representing the type and the path of files/folders
+    """
+    source_name = os.path.split(source_path)[-1]
+    hierarchy_list = HierarchyFolder(source_name, source_path, 0)
+
+    for data in data_list:
+        typ, path = data
+        target_folders = split_path(path, source_name)[1:]
         name = target_folders[-1]
         depth = len(target_folders)
-        inserter(hierarchy_list, target_folders, HierarchyFile(name, current_path, depth))
+        if typ == HierarchyFolder:
+            entity = HierarchyFolder(name, path, depth)
+        else:
+            entity = HierarchyFile(name, path, depth)
+        inserter(hierarchy_list, target_folders, entity)
     return hierarchy_list
 
 
 def inserter(root: HierarchyFolder, target_folders: list, entity_data: HierarchyFile):
+    """
+    Use recursion to go into HierarchyFolder where the file/folder is stored
+    """
     current_target_name = target_folders[0]
 
     if len(target_folders) <= 1:
@@ -382,22 +430,23 @@ def sort_file_and_folder(lib: list, path: str):
         i += 1
         time += 1
 
+
 """
 source = os.path.abspath("../..")
 hierarchy = HierarchyMaker(source)
 
 file_name_f = Filter("file_name", True, [])
 extension_f = Filter("extension", True, [])
-folder_name_fb = Filter("folder_name", False, ["venv", ".git"])
+folder_name_fb = Filter("folder_name", False, [])
 folder_name_fw = Filter("folder_name", True, [])
-depth_f = Filter("depth", True, [])
+depth_f = Filter("depth", True, [11])
 filter_list = [folder_name_fb, folder_name_fw, extension_f, file_name_f, depth_f]
 
 text = hierarchy.get_hierarchy_normalised_text(filter_list)
 text_b = hierarchy.get_hierarchy_normalised_text()
 
 with open("hierarchy.txt", "w", encoding="utf-8") as file:
-    file.write(text)
+    file.write(text_b)
 
 print(hierarchy.get_max_depth())
 print(hierarchy.get_entity_count())
