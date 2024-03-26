@@ -284,6 +284,8 @@ def main(imap_server, user_email, user_mdp, folder_target, nb_mail_to_fetch, sta
 
     mail_count = int(mail_indexes[-1])
     mail_stop = 0
+    if nb_mail_to_fetch > mail_count:
+        nb_mail_to_fetch = mail_count
     if nb_mail_to_fetch != 0:
         mail_stop = mail_count - nb_mail_to_fetch
     total_mail = mail_count - mail_stop
