@@ -18,8 +18,7 @@ _indicator = "__Well-decrypted-by-password-because-this-second-sentence-appear-m
 _user_separator = "EßÔ=áá¼=@êí_D¶÷CÁêÔeêK¯Æ¿ÂÉ,Oò|dñ×2THåjÞ/EV©x^ ÿáÒÈãJ·ë)lÓ]9/§=mÛs¸<>SÓÉ	òÈ¸ñÆ"
 
 
-class data_handler:
-
+class DataHandler:
     def __init__(self, file_path=_file_path, indicator=_indicator, user_separator=_user_separator):
         """
         Allow to interact with a crypt data file easily

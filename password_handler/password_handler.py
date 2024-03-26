@@ -10,7 +10,7 @@ import os
 import data_handler as dh
 import tkinter as tk
 
-_data_h = dh.data_handler("crypt.txt")
+_data_h = dh.DataHandler("crypt.txt")
 _info_file_name = "information.txt"
 _current_password = ""
 

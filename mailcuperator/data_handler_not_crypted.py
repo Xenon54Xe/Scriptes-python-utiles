@@ -12,13 +12,12 @@ _abs_path = os.path.abspath("")
 
 _file_path = f"{_abs_path}\\data_handler_not_crypted.txt"
 
-_data_separator = "__Data-separator-de-la-mort__"
+_data_separator = "__A-data-separator-need-to-be-quite-long__"
 
-_user_separator = "__User-separator-de-la-mort__"
+_user_separator = "__The-same-thing-is-needed-for-an-user-separator__"
 
 
-class data_handler:
-
+class DataHandler:
     def __init__(self, file_path=_file_path, user_separator=_user_separator, data_separator=_data_separator):
         """
         Allow to interact with a data file easily

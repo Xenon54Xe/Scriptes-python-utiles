@@ -15,19 +15,23 @@ import imaplib
 import email
 import webbrowser
 
+import threading
+
 import data_handler_not_crypted as data_handler_nc
 
 # data base creation
 _abs_path = os.path.abspath("")
 _account_path = f"{_abs_path}\\account_handler"
-_dh = data_handler_nc.data_handler(_account_path)
+_dh = data_handler_nc.DataHandler(_account_path)
 
 # use your email provider's IMAP server, you can look for your provider's IMAP server on Google
 # or check this page: https://www.systoolsgroup.com/imap/
 _imap_dictionary = {
     "yahoo": "imap.mail.yahoo.com",
     "outlook": "imap-mail.outlook.com",
-    "hotmail": "imap-mail.outlook.com"
+    "hotmail": "imap-mail.outlook.com",
+    "gmail": "imap.gmail.com",
+    "icloud": "imap.mail.me.com"
 }
 
 
@@ -170,6 +174,8 @@ def on_quit():
 
 
 def start():
+    global is_searching
+
     # vérifications
     user_email = user_email_value.get()
     user_mdp_app = user_mdp_app_value.get()
@@ -186,7 +192,7 @@ def start():
     # ajout du triage
     sorting = []
     if sorting_all_in_same_folder.get() == 1:
-        sorting.append("all_in_same")
+        sorting.append("all_in_one")
     if sorting_author_value.get() == 1:
         sorting.append("author")
 
@@ -216,16 +222,26 @@ def start():
     if typ == "OK":
         print("=" * 100)
         print("Un fichier folder_keeper a été créé, il contient tous les fichiers rangés dans des dossiers\n"
-              "portant le nom des mails où ils ont étés trouvés.\n"
-              "Un fichier files_keeper a été créé, il contient tous les fichiers trouvés dans les mails,\n"
-              "s'il existe des fichiers avec le même nom, le plus récent a été conservé.\n")
+              "portant le nom des mails où ils ont étés trouvés.")
 
-        print(f"{mail_count} mails ont étés traités et {file_count} fichiers ont étés téléchargés.")
+        if "all_in_one" in sorting:
+            print("Un fichier files_keeper a été créé, il contient tous les fichiers trouvés dans les mails,\n"
+                  "s'il existe des fichiers avec le même nom, le plus récent a été conservé.")
+
+        if "author" in sorting:
+            print("Un fichier author_keeper a été créé, il contient les fichiers "
+                  "trouvés dans les mails rangés par auteur.")
+
+        print(f"\n{mail_count} mails ont étés traités et {file_count} fichiers ont étés téléchargés.")
+
+    is_searching = False
+    if typ != "Erase":
+        select_frame("recup")
 
 
 def main(imap_server, user_email, user_mdp, folder_target, nb_mail_to_fetch, start_time: float, sorting: list):
     """
-    Les différents mode de triage sont : author
+    Les différents mode de triage sont : author, all_in_one
     """
     # create an IMAP4 class with SSL
     try:
@@ -334,7 +350,7 @@ def main(imap_server, user_email, user_mdp, folder_target, nb_mail_to_fetch, sta
     if os.path.exists(files_keeper_path):
         force_rmdir(files_keeper_path)
 
-    if "all_in_same" in sorting:
+    if "all_in_one" in sorting:
         os.mkdir(files_keeper_path)
 
         # Ajout des fichiers, les plus vieux sont écrasés par les plus récents
@@ -413,41 +429,54 @@ window.minsize(450, 300)
 window.iconbitmap("atome.ico")
 window.configure(bg=window_bg_color)
 
-window.protocol("WM_DELETE_WINDOW", on_quit)
-
+"""
+Logique des touches
+"""
+window.bind("<Return>", lambda *args: validate())
+window.bind("<Escape>", lambda *args: on_quit())
 
 """
 Logique window
 """
 current_frame = None  # Allow to track in what window the user is
+is_searching = False
+thread_start = threading.Thread(target=start)
+window.protocol("WM_DELETE_WINDOW", on_quit)
 
 
 def select_frame(frame_name):
     """
-    frame_name: email, mdp, recup
+    frame_name: email, mdp, recup, waiting
     """
     global current_frame
+    global thread_start
 
-    frame_names = ["email", "mdp", "recup"]
+    frame_names = ["email", "mdp", "recup", "waiting"]
     if frame_name not in frame_names:
         raise Exception("Le nom de frame spécifié n'est pas correct")
 
     frame_email.pack_forget()
     frame_mdp_app.pack_forget()
     frame_recuperation.pack_forget()
+    frame_waiting.pack_forget()
 
     if frame_name == frame_names[0]:
         frame_email.pack(expand=True)
     elif frame_name == frame_names[1]:
         frame_mdp_app.pack(expand=True)
     elif frame_name == frame_names[2]:
+        thread_start = threading.Thread(target=start)
         frame_recuperation.pack(expand=True)
+    elif frame_name == frame_names[3]:
+        frame_waiting.pack(expand=True)
 
     current_frame = frame_name
 
 
 def validate():
     global current_frame
+    global is_searching
+    global thread_start
 
     if current_frame == "email":
         user_email = user_email_value.get()
@@ -475,7 +504,13 @@ def validate():
         select_frame("recup")
 
     elif current_frame == "recup":
-        start()
+        select_frame("waiting")
+
+        is_searching = True
+        thread_start.start()
+
+    elif current_frame == "waiting" and not is_searching:
+        select_frame("recup")
 
 
 """
@@ -489,6 +524,9 @@ frame_mdp_app.configure(bg=frame_bg_color, borderwidth=2, relief="raised")
 
 frame_recuperation = Frame(window)
 frame_recuperation.configure(bg=frame_bg_color, borderwidth=2, relief="raised")
+
+frame_waiting = Frame(window)
+frame_waiting.configure(bg=frame_bg_color, borderwidth=2, relief="raised")
 
 
 """
@@ -590,9 +628,14 @@ button_download.pack(padx=5, pady=5)
 
 
 """
-Logique des touches
+Elements dans waiting (la page d'attente)
 """
-window.bind("<Return>", lambda *args: validate())
+
+# label
+label_waiting = Label(frame_waiting, text="Récupération en cours...", fg="blue")
+label_waiting.configure(bg=frame_bg_color)
+label_waiting.pack(padx=5, pady=5)
+
 
 """
 Finalization
