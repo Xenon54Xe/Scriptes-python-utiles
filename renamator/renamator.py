@@ -16,7 +16,7 @@ Variables globales
 _modes = ["Rename", "Add", "Remove"]
 
 
-def take_numbers(text: str) -> list[int]:
+def take_numbers(text: str) -> list:
     """
     Return a list of numbers present on a text
     :param text:
@@ -55,7 +55,7 @@ def take_numbers(text: str) -> list[int]:
     return [int(text[i[0]:i[1]]) for i in list_index]
 
 
-def classify_numbers(num_list: list, increase: bool = True) -> list[int]:
+def classify_numbers(num_list: list, increase: bool = True) -> list:
     """
     Classify a list of number
     :param num_list:
@@ -243,81 +243,87 @@ def start():
 """
 Configuration de la fenêtre
 """
+window_bg_color = "#0CA8D6"
+frame_bg_color = "#da7eff"
+label_bg_color = "#29fff5"
+button_bg_color = "#ffc829"
+
 window = Tk()
 
 window.title("renamator")
-window.geometry("350x350")
-window.minsize(350, 230)
+window.geometry("350x390")
+window.minsize(350, 390)
 window.iconbitmap("atome.ico")
+window.configure(bg=window_bg_color)
 
 """
 Eléments dans main_frame
 """
-main_frame = Frame(window, borderwidth=2, relief=GROOVE)
+main_frame = Frame(window, borderwidth=2, relief="raised", bg=frame_bg_color)
 
 # bouton de sortie
-button_rename = Button(main_frame, text="Renommer les fichiers", command=start, fg="red")
-button_rename.pack()
+button_rename = Button(main_frame, text="Renommer les fichiers", command=start, fg="red", bg=button_bg_color)
+button_rename.pack(padx=5, pady=5)
 
 # label a
-label_path = Label(main_frame, text="Chemin d'accès", fg="blue")
-label_path.pack()
+label_path = Label(main_frame, text="Chemin d'accès", fg="blue", bg=label_bg_color)
+label_path.pack(padx=5)
 
 # entrée a
 path_value = StringVar()
 path_value.set("")
 entry_path = Entry(main_frame, textvariable=path_value, width=30)
-entry_path.pack()
+entry_path.pack(padx=5, pady=5)
 
 # label b
 text_label_name = StringVar()
 text_label_name.set("Nom à donner aux fichiers")
-label_name = Label(main_frame, textvariable=text_label_name, fg="blue")
-label_name.pack()
+label_name = Label(main_frame, textvariable=text_label_name, fg="blue", bg=label_bg_color)
+label_name.pack(padx=5)
 
 # entrée b
 name_value = StringVar()
 name_value.set("")
 entry_name = Entry(main_frame, textvariable=name_value, width=30)
-entry_name.pack()
+entry_name.pack(padx=5, pady=5)
 
 # label c
-label_folder_type = Label(main_frame, text="Types de fichiers à modifier", fg="blue")
-label_folder_type.pack()
+label_folder_type = Label(main_frame, text="Types de fichiers à modifier", fg="blue", bg=label_bg_color)
+label_folder_type.pack(padx=5)
 
 # entrée c
 type_value = StringVar()
 type_value.set(".jpg .png")
 entry_type = Entry(main_frame, textvariable=type_value, width=30)
-entry_type.pack()
+entry_type.pack(padx=5, pady=5)
 
 # label d
 label_list_type = Label(main_frame, text="Images: .jpg .JPG .png\n"
                                          "Video: .mp4\n"
                                          "Text: .txt .odt",
-                        fg="green")
-label_list_type.pack()
+                        fg="green", bg=label_bg_color)
+label_list_type.pack(padx=5)
 
 """
 Elements dans check_frame
 """
-check_frame = Frame(main_frame, borderwidth=1, relief=GROOVE)
+check_frame = Frame(main_frame, borderwidth=2, relief="raised", bg=frame_bg_color)
 
-label_check_frame_title = Label(check_frame, text="Mode", fg="Red")
-label_check_frame_title.pack()
+label_check_frame_title = Label(check_frame, text="Mode", fg="Black", bg=label_bg_color)
+label_check_frame_title.pack(padx=5, pady=5)
 
 rename_bool = BooleanVar()
 rename_bool.set(True)
-button_rename_bool = Checkbutton(check_frame, text="Renommer", variable=rename_bool)
-button_rename_bool.pack()
+button_rename_bool = Checkbutton(check_frame, text="Renommer", variable=rename_bool, bg=button_bg_color)
+button_rename_bool.pack(padx=5, pady=5)
 
 add_bool = BooleanVar()
-button_add_bool = Checkbutton(check_frame, text="Ajouter", variable=add_bool)
-button_add_bool.pack()
+button_add_bool = Checkbutton(check_frame, text="Ajouter", variable=add_bool, bg=button_bg_color)
+button_add_bool.pack(padx=5)
 
 remove_bool = BooleanVar()
-button_remove_bool = Checkbutton(check_frame, text="Enlever", variable=remove_bool)
-button_remove_bool.pack()
+button_remove_bool = Checkbutton(check_frame, text="Enlever", variable=remove_bool, bg=button_bg_color)
+button_remove_bool.pack(padx=5, pady=5)
 
 """
 Fonctionnement des bouttons check 
@@ -363,7 +369,9 @@ set_check_button_tracer()
 """
 Finalization
 """
-main_frame.pack()
-check_frame.pack()
+main_frame.pack(expand=True)
+check_frame.pack(padx=5, pady=5)
 
+window.bind("<Return>", lambda *args: start())
+window.bind("<Escape>", lambda *args: window.quit())
 window.mainloop()

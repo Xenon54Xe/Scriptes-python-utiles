@@ -45,6 +45,8 @@ def connect():
                                 "Vous pouvez modifier son contenu\n"
                                 "Avant de vous déconnecter faites 'sauvegarder'")
 
+    window.bind("<Return>", lambda *args: save())
+    window.bind("<Escape>", lambda *args: disconnect())
     connection_frame.pack_forget()
     account_frame.pack(expand=1)
 
@@ -58,6 +60,7 @@ def disconnect():
 
     connection_new_user_var_write.set("Vous n'avez pas de compte ?")
 
+    window.bind("<Escape>", lambda *args: window.quit())
     account_frame.pack_forget()
     connection_frame.pack(expand=1)
 
@@ -94,6 +97,7 @@ window.minsize(360, 280)
 window.config(background=_bg_color)
 window.iconbitmap("atome.ico")
 window.protocol("WM_DELETE_WINDOW", on_closing)
+
 
 """
 Création de la page de connection
@@ -161,4 +165,7 @@ Finalisation
 """
 connection_frame.pack(expand=1)
 account_frame.pack_forget()
+
+window.bind("<Return>", lambda *args: connect())
+window.bind("<Escape>", lambda *args: window.quit())
 window.mainloop()

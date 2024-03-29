@@ -47,7 +47,7 @@ def is_word_in_text(word: str, text: str) -> bool:
     return False
 
 
-def sort_list(old_list: list[int], croissant=True) -> list[int]:
+def sort_list(old_list: list, croissant=True) -> list:
     new_list = []
     for num in old_list:
         if len(new_list) == 0:

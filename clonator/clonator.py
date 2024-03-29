@@ -1,5 +1,5 @@
 """
-Objective: Clone this scrypt without things between the borders
+Objective: Clone this scrypt without things between borders
 Creator: XenonEGG
 
 using: python 3.6
@@ -8,67 +8,65 @@ encoding: utf-8
 
 
 # don't look !
-def occurences(text, mot):
-    lst = []
-    for i in range(len(text) - len(mot) + 1):
-        e = text[i:i+len(mot)]
-        if e == mot:
-            lst.append(i)
-    return lst
+def find_word(text: str, word: str) -> list:
+    result = []
+    n = len(text)
+    size = len(word)
+    for i in range(n - size + 1):
+        cur_word = text[i:i + size]
+        if cur_word == word:
+            result.append(i)
+    return result
 
 
-def vire_borne(text, borne):
-    index_list = occurences(text, borne)
-    nb_borne = len(index_list)
+def clear_under_borne(text: str, borne: str) -> str:
+    borne_index_list = find_word(text, borne)
+    borne_nb = len(borne_index_list)
+    borne_size = len(borne)
+    area_nb = borne_nb // 2
 
-    if nb_borne % 2 != 0 or nb_borne == 0:
-        raise Exception(f"Le nombre de bornes ({nb_borne}) doit être un nombre pair supérieur à 0")
+    if borne_nb % 2 == 1 or borne_nb == 0:
+        raise Exception(f"Le nombre de bornes ({borne_nb}) doit être un nombre pair supérieur à 0")
 
-    if nb_borne == 2:
-        a, b = index_list[0], index_list[1]
-        return text[:a-1] + text[b + len(borne) + 1:]
+    text_to_remove_list = []
+    for i in range(area_nb):
+        borne_left = borne_index_list[i * 2]
+        borne_right = borne_index_list[i * 2 + 1] + borne_size
+        text_to_remove_list.insert(0, text[borne_left:borne_right])
 
-    new_text = ""
-    a, b = 0, index_list[0]
-    to_add = text[a:b-1]
-    new_text += to_add
-
-    nb_trunc = nb_borne // 2
-    for i in range(0, nb_trunc - 1):
-        print(i)
-        a, b = index_list[i * 2 + 1], index_list[i * 2 + 2]
-        to_add = text[a + len(borne):b-1]
-        new_text += to_add
-
-    a, b = index_list[-1], len(text)
-    to_add = text[a + len(borne):b]
-    new_text += to_add
+    new_text = text
+    for i in range(len(text_to_remove_list)):
+        text_to_remove = text_to_remove_list[i]
+        text_to_remove_index = find_word(text, text_to_remove)[0]
+        size = len(text_to_remove)
+        new_text = new_text[: text_to_remove_index] + new_text[text_to_remove_index + size:]
 
     return new_text
 
 
-def appelle_moi():
-    with open("clonator.py", "r", encoding="utf-8") as source:
+def get_path():
+    return __file__
+
+
+def call_me():
+    path = get_path()
+    with open(path, "r", encoding="utf-8") as source:
         data = source.read()
-    deli = "!"
-    data = vire_borne(data, f"# don't look {deli}")
-    print(data)
+    indicator = "!"
+    data = clear_under_borne(data, f"# don't look {indicator}\n")
+
     with open("troll.py", "w", encoding="utf-8") as file:
         file.write(data)
 
 
 # don't look !
-def triage(L):
+def triage(lst):
 # don't look !
-    appelle_moi()
+    call_me()
 # don't look !
-    return sorted(L)
+    return sorted(lst)
+# don't look !
 
+# J'écris a longueur de journée
 
-x = triage([1, 5, 6, 2, 8, 0])
-print(x)
-# don't look !
-"""
-J'écris des conneries a longueur de journée
-"""
 # don't look !
