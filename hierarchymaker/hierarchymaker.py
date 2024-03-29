@@ -143,7 +143,7 @@ class HierarchyMaker:
         """
         self.source_path = None
         self.source_name = None
-        self.hierarchy_folder: HierarchyFolder = HierarchyFolder("", "", -1)
+        self.hierarchy_folder = HierarchyFolder("", "", -1)
         self.hierarchy_normalised_text = ""
 
         """
@@ -298,6 +298,7 @@ class HierarchyMaker:
         Return a string representing the folder's hierarchy, filtered or not
         """
         new_hierarchy_folder = self.get_hierarchy_object(filter_list)
+        self.hierarchy_normalised_text = ""
         self.make_hierarchy_normalised_text(new_hierarchy_folder)
         return self.hierarchy_normalised_text
 
@@ -440,9 +441,9 @@ extension_f = Filter("extension", True, [])
 folder_name_fb = Filter("folder_name", False, [])
 folder_name_fw = Filter("folder_name", True, [])
 depth_f = Filter("depth", True, [11])
-filter_list = [folder_name_fb, folder_name_fw, extension_f, file_name_f, depth_f]
+list_filter = [folder_name_fb, folder_name_fw, extension_f, file_name_f, depth_f]
 
-text = hierarchy.get_hierarchy_normalised_text(filter_list)
+text = hierarchy.get_hierarchy_normalised_text(list_filter)
 text_b = hierarchy.get_hierarchy_normalised_text()
 
 with open("hierarchy.txt", "w", encoding="utf-8") as file:
