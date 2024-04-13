@@ -1,0 +1,478 @@
+
+C:\stationeers>rocketstation_DedicatedServer.exe -LOAD XenonWorld Europa -SETTINGSPATH "C:\stationeers" -settings StartLocalHost true ServerVisible true GamePort 27016 UpdatePort 27015 AutoSave true SaveInterval 300 LocalIpAddress 0.0.0.0 ServerName "TitouTangMoon" DifficultySetting Normal ServerPassword MyWorld ServerAuthSecret admin ServerMaxPlayers 10
+[UnityMemory] Configuration Parameters - Can be set up in boot.config
+    "memorysetup-bucket-allocator-granularity=16"
+    "memorysetup-bucket-allocator-bucket-count=8"
+    "memorysetup-bucket-allocator-block-size=4194304"
+    "memorysetup-bucket-allocator-block-count=1"
+    "memorysetup-main-allocator-block-size=16777216"
+    "memorysetup-thread-allocator-block-size=16777216"
+    "memorysetup-gfx-main-allocator-block-size=16777216"
+    "memorysetup-gfx-thread-allocator-block-size=16777216"
+    "memorysetup-cache-allocator-block-size=4194304"
+    "memorysetup-typetree-allocator-block-size=2097152"
+    "memorysetup-profiler-bucket-allocator-granularity=16"
+    "memorysetup-profiler-bucket-allocator-bucket-count=8"
+    "memorysetup-profiler-bucket-allocator-block-size=4194304"
+    "memorysetup-profiler-bucket-allocator-block-count=1"
+    "memorysetup-profiler-allocator-block-size=16777216"
+    "memorysetup-profiler-editor-allocator-block-size=1048576"
+    "memorysetup-temp-allocator-size-main=4194304"
+    "memorysetup-job-temp-allocator-block-size=2097152"
+    "memorysetup-job-temp-allocator-block-size-background=1048576"
+    "memorysetup-job-temp-allocator-reduction-small-platforms=262144"
+    "memorysetup-temp-allocator-size-background-worker=32768"
+    "memorysetup-temp-allocator-size-job-worker=262144"
+    "memorysetup-temp-allocator-size-preload-manager=262144"
+    "memorysetup-temp-allocator-size-nav-mesh-worker=65536"
+    "memorysetup-temp-allocator-size-audio-worker=65536"
+    "memorysetup-temp-allocator-size-cloud-worker=32768"
+    "memorysetup-temp-allocator-size-gfx=262144"
+Mono path[0] = 'C:/stationeers/rocketstation_DedicatedServer_Data/Managed'
+Mono config path = 'C:/stationeers/MonoBleedingEdge/etc'
+Initialize engine version: 2021.2.13f1 (90b6766da538)
+[Subsystems] Discovering subsystems at path C:/stationeers/rocketstation_DedicatedServer_Data/UnitySubsystems
+Forcing GfxDevice: Null
+GfxDevice: creating device client; threaded=0; jobified=0
+NullGfxDevice:
+    Version:  NULL 1.0 [1.0]
+    Renderer: Null Device
+    Vendor:   Unity Technologies
+Begin MonoManager ReloadAssembly
+- Completed reload, in  0.318 seconds
+ERROR: Shader Hidden/BilateralBlur shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+ERROR: Shader Sandbox/VolumetricLight shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+ERROR: Shader Sprites/Default shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+Microsoft Media Foundation video decoding to texture disabled: graphics device is Null, only Direct3D 11 and Direct3D 12 (only on desktop) are supported for hardware-accelerated video decoding.
+ERROR: Shader Sprites/Mask shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+UnloadTime: 1.514700 ms
+´╗┐´╗┐UnauthorizedAccessException: Access to the path 'C:\stationeers' is denied.
+  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.Boolean anonymous, System.IO.FileOptions options) [0x000e0] in <7b935204f5ff4bcab44b3b0ebca330bf>:0
+  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize) [0x00000] in <7b935204f5ff4bcab44b3b0ebca330bf>:0
+  at (wrapper remoting-invoke-with-check) System.IO.FileStream..ctor(string,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare,int)
+  at System.IO.File.Create (System.String path, System.Int32 bufferSize) [0x00000] in <7b935204f5ff4bcab44b3b0ebca330bf>:0
+  at System.IO.File.Create (System.String path) [0x00000] in <7b935204f5ff4bcab44b3b0ebca330bf>:0
+  at System.IO.FileInfo.Create () [0x00006] in <7b935204f5ff4bcab44b3b0ebca330bf>:0
+  at (wrapper remoting-invoke-with-check) System.IO.FileInfo.Create()
+  at Util.Commands.SettingsCommand.EnsureExistence () [0x00030] in <b721b1c9aa564c1e822ba17ec375b0ec>:0
+  at Util.Commands.SettingsCommand.OnValueChanged () [0x00000] in <b721b1c9aa564c1e822ba17ec375b0ec>:0
+  at Util.Commands.ClassManipulator`1[T].SetNewValue (System.String propName, System.Object value) [0x00121] in <b721b1c9aa564c1e822ba17ec375b0ec>:0
+  at Util.Commands.ClassManipulator`1[T].Execute (System.String[] args) [0x0009f] in <b721b1c9aa564c1e822ba17ec375b0ec>:0
+  at Util.Commands.CommandLine.ExecuteCommand (System.String currentKey, Util.Commands.CommandBase cmd, System.String[] args) [0x00026] in <b721b1c9aa564c1e822ba17ec375b0ec>:0
+  at Util.Commands.CommandLine.Process (System.String[] args) [0x000e2] in <b721b1c9aa564c1e822ba17ec375b0ec>:0
+  at Util.Commands.CommandLine.ProcessOnLaunch () [0x00023] in <b721b1c9aa564c1e822ba17ec375b0ec>:0
+
+ERROR: Shader UI/Default shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+The referenced script on this Behaviour (Game Object 'marine_body_armor_female') is missing!
+The referenced script on this Behaviour (Game Object 'marine_body_armor_male') is missing!
+The referenced script on this Behaviour (Game Object 'jumpsuit_male_army') is missing!
+The referenced script on this Behaviour (Game Object 'jumpsuit_female_army') is missing!
+The referenced script on this Behaviour (Game Object 'jumpsuit_female_orange') is missing!
+The referenced script on this Behaviour (Game Object 'jumpsuit_male_orange') is missing!
+The referenced script on this Behaviour (Game Object 'uniform_marine_female') is missing!
+The referenced script on this Behaviour (Game Object 'uniform_marine_male') is missing!
+The referenced script (ConsoleDebug) on this Behaviour is missing!
+The referenced script on this Behaviour (Game Object 'GameControllers') is missing!
+The referenced script on this Behaviour (Game Object 'GameControllers') is missing!
+The referenced script on this Behaviour (Game Object 'GameControllers') is missing!
+The referenced script on this Behaviour (Game Object 'GameControllers') is missing!
+The referenced script on this Behaviour (Game Object 'GameControllers') is missing!
+Unloading 6 Unused Serialized files (Serialized files now loaded: 0)
+ERROR: Shader Legacy Shaders/VertexLit shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Legacy Shaders/Diffuse' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Legacy Shaders/Diffuse shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Legacy Shaders/Diffuse' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Custom/AsteroidBasic' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Custom/AsteroidBasic shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Custom/AsteroidBasic' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Hidden/FXAA Preset 2' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Hidden/FXAA Preset 2 shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Hidden/FXAA Preset 2' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Projector/planet_shadow shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+ERROR: Shader CameraFilterPack/TV_Vignetting shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Standard' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Standard shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Standard' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader CameraFilterPack/NightVisionFX shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+ERROR: Shader Custom/SkyboxStars shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+ERROR: Shader Unlit/AlphaSelfIllum shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+ERROR: Shader CameraFilterPack/TV_Distorted shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+ERROR: Shader CameraFilterPack/Noise_TV shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Custom/TerrainLODShader' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Custom/TerrainLODShader shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Custom/TerrainLODShader' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Custom/Distortion shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+ERROR: Shader TextMeshPro/Mobile/Distance Field shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+ERROR: Shader Custom/SpaceMapSelectionOutline shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+ERROR: Shader Mobile/Particles/Additive shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+ERROR: Shader Custom/WorldspaceOverlayUI shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+ERROR: Shader Unlit/MapGrid shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Custom/Lava' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Custom/Lava shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Custom/Lava' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'TextMeshPro/Distance Field' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader TextMeshPro/Distance Field shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'TextMeshPro/Distance Field' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Legacy Shaders/Transparent/Cutout/VertexLit shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Hidden/Ethical Motion/Particles/Lit Alpha Blend Shadow Fallback' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Hidden/Ethical Motion/Particles/Lit Alpha Blend Shadow Fallback shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Hidden/Ethical Motion/Particles/Lit Alpha Blend Shadow Fallback' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Particles/Standard Surface' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Particles/Standard Surface shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Particles/Standard Surface' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Legacy Shaders/Particles/Alpha Blended shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+ERROR: Shader Unlit/MapStars shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+ERROR: Shader CameraFilterPack/BlurTiltShift shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Custom/PlanetBasic' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Custom/PlanetBasic shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Custom/PlanetBasic' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader CameraFilterPack/TV_BrokenGlass shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+ERROR: Shader CameraFilterPack/Vision_SniperScore shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+ERROR: Shader Particles/Alpha Blended Cutoff shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Custom/OreScannerColorShader' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Custom/OreScannerColorShader shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Custom/OreScannerColorShader' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader CameraFilterPack/FX_Drunk2 shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Custom/3DTextLit' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Custom/3DTextLit shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Custom/3DTextLit' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Custom/WorldspaceOverlayTerrain' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Custom/WorldspaceOverlayTerrain shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Custom/WorldspaceOverlayTerrain' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader CameraFilterPack/Blur_Radial shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+ERROR: Shader Particles/AdditiveScaledHDR shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+ERROR: Shader Unlit/NoDepthEmissive shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Custom/PowerTransmission' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Custom/PowerTransmission shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Custom/PowerTransmission' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader CameraFilterPack/Light_Water shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Custom/OreGoggleVisualizer' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Custom/OreGoggleVisualizer shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Custom/OreGoggleVisualizer' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader UI/TranslucentImage shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Custom/OreScannerShader' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Custom/OreScannerShader shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Custom/OreScannerShader' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Custom/DepthMask shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Ethical Motion/Particles/Lit MultiLight' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Ethical Motion/Particles/Lit MultiLight shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Ethical Motion/Particles/Lit MultiLight' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Custom/ShockDiamond shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Custom/StandardInstancedIndirect (Specular)' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Custom/StandardInstancedIndirect (Specular) shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Custom/StandardInstancedIndirect (Specular)' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader CameraFilterPack/Color_BrightContrastSaturation shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Custom/SurfaceShader_VC' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Custom/SurfaceShader_VC shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Custom/SurfaceShader_VC' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Custom/StandardTextureArray' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Custom/StandardTextureArray shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Custom/StandardTextureArray' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Standard (Specular setup)' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Standard (Specular setup) shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Standard (Specular setup)' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Unlit/MesonScanner shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Legacy Shaders/Bumped Diffuse' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Legacy Shaders/Bumped Diffuse shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Legacy Shaders/Bumped Diffuse' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Autodesk Interactive' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Autodesk Interactive shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Autodesk Interactive' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Custom/WorldspaceOverlayTerrainUpgraded' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Custom/WorldspaceOverlayTerrainUpgraded shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Custom/WorldspaceOverlayTerrainUpgraded' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Custom/CharacterSuitShader' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Custom/CharacterSuitShader shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Custom/CharacterSuitShader' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Unlit/PortraitCamera shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+ERROR: Shader Custom/Hologram shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+ERROR: Shader Unlit/FeatheredEdges shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+ERROR: Shader CameraFilterPack/AAA_Blood_Hit shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+ERROR: Shader Legacy Shaders/Particles/Additive shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+ERROR: Shader Unlit/UnlitAlphaWithFade shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Hidden/FXAA Preset 3' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Hidden/FXAA Preset 3 shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Hidden/FXAA Preset 3' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Particles/AdditiveCameraFade shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+ERROR: Shader Custom/Water shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Particles/Standard Unlit' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Particles/Standard Unlit shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Particles/Standard Unlit' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Legacy Shaders/Particles/Alpha Blended Premultiply shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+ERROR: Shader CameraFilterPack/AAA_Super_Computer shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'StandardInstancedCutable' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader StandardInstancedCutable shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'StandardInstancedCutable' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Custom/Translucent' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Custom/Translucent shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Custom/Translucent' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Custom/Stationeers Transparent shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+ERROR: Shader Skybox/6 Sided shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+ERROR: Shader GUI/Text Shader shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Custom/3dPrinting' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Custom/3dPrinting shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Custom/3dPrinting' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Custom/VegetationWave' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Custom/VegetationWave shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Custom/VegetationWave' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader CameraFilterPack/TV_80 shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'StandardInstanced' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader StandardInstanced shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'StandardInstanced' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+UnloadTime: 44.402400 ms
+No mesh data available for mesh LowPolySphere on particle system ThingFires. Make sure Read/Write Enabled is set in the importer to work on the particle system renderer
+No mesh data available for mesh LowPolySphere on particle system AtmosphericFires. Make sure Read/Write Enabled is set in the importer to work on the particle system renderer
+No mesh data available for mesh LowPolySphere on particle system CondensationClouds. Make sure Read/Write Enabled is set in the importer to work on the particle system renderer
+ERROR: Shader TextMeshPro/Mobile/Bitmap shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+ERROR: Shader TextMeshPro/Sprite shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+Unsupported shader (SSAO).
+ERROR: Shader Easy Flares/src_Dirt_SM2_0 shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Easy Flares/src_Dirt' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Easy Flares/src_Dirt shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Easy Flares/src_Dirt' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Easy Flares/src_Ghost_SM2_0 shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Easy Flares/src_Ghost' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Easy Flares/src_Ghost shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Easy Flares/src_Ghost' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Easy Flares/src_Glow_SM2_0 shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Easy Flares/src_Glow' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Easy Flares/src_Glow shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Easy Flares/src_Glow' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Easy Flares/src_Simple_SM2_0 shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Easy Flares/src_Simple' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Easy Flares/src_Simple shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Easy Flares/src_Simple' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Easy Flares/src_Starburst_SM2_0 shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Easy Flares/src_Starburst' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Easy Flares/src_Starburst shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Easy Flares/src_Starburst' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+The shader Hidden/GlobalFog (UnityEngine.Shader) on effect Main Camera (UnityStandardAssets.ImageEffects.GlobalFog) is not supported on this platform!
+The image effect Main Camera (UnityStandardAssets.ImageEffects.GlobalFog) has been disabled as it's not supported on the current platform.
+The shader Hidden/AtmosphericScattering_Deferred (UnityEngine.Shader) on effect Main Camera (AtmosphericScatteringDeferred) is not supported on this platform!
+The image effect Main Camera (AtmosphericScatteringDeferred) has been disabled as it's not supported on the current platform.
+The image effect Main Camera (UnityStandardAssets.ImageEffects.Antialiasing) has been disabled as it's not supported on the current platform.
+ERROR: Shader Hidden/FillCrop shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+Unloading 22357 unused Assets to reduce memory usage. Loaded Objects now: 189966.
+Total: 1122.039000 ms (FindLiveObjects: 95.408400 ms CreateObjectMapping: 31.373000 ms MarkObjects: 967.690900 ms  DeleteObjects: 27.565800 ms)
+
+Unloading 2 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 0 unused Assets to reduce memory usage. Loaded Objects now: 191087.
+Total: 860.693200 ms (FindLiveObjects: 29.980300 ms CreateObjectMapping: 25.446400 ms MarkObjects: 804.727000 ms  DeleteObjects: 0.538500 ms)
+
+WARNING: Shader Unsupported: 'Custom/DiffuseEmitWithAlphaMask' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Custom/DiffuseEmitWithAlphaMask shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Custom/DiffuseEmitWithAlphaMask' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Odissey/Odissey A' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Odissey/Odissey A shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Odissey/Odissey A' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Custom/EarthGround' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Custom/EarthGround shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Custom/EarthGround' - All subshaders removed
+***Stationeers - 0.2.4892.22208***
+15:39:38: Set custom settings path: C:\stationeers
+15:39:38: Changed setting 'StartLocalHost' from 'False' to 'True'
+15:39:38: [EXCEPTION] unauthorizedaccessexception: access to the path 'c:\stationeers' is denied.
+15:39:38: System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.Boolean anonymous, System.IO.FileOptions options) (at <7b935204f5ff4bcab44b3b0ebca330bf>:0)
+System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize) (at <7b935204f5ff4bcab44b3b0ebca330bf>:0)
+(wrapper remoting-invoke-with-check) System.IO.FileStream..ctor(string,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare,int)
+System.IO.File.Create (System.String path, System.Int32 bufferSize) (at <7b935204f5ff4bcab44b3b0ebca330bf>:0)
+System.IO.File.Create (System.String path) (at <7b935204f5ff4bcab44b3b0ebca330bf>:0)
+System.IO.FileInfo.Create () (at <7b935204f5ff4bcab44b3b0ebca330bf>:0)
+(wrapper remoting-invoke-with-check) System.IO.FileInfo.Create()
+Util.Commands.SettingsCommand.EnsureExistence () (at <b721b1c9aa564c1e822ba17ec375b0ec>:0)
+Util.Commands.SettingsCommand.OnValueChanged () (at <b721b1c9aa564c1e822ba17ec375b0ec>:0)
+Util.Commands.ClassManipulator`1[T].SetNewValue (System.String propName, System.Object value) (at <b721b1c9aa564c1e822ba17ec375b0ec>:0)
+Util.Commands.ClassManipulator`1[T].Execute (System.String[] args) (at <b721b1c9aa564c1e822ba17ec375b0ec>:0)
+Util.Commands.CommandLine.ExecuteCommand (System.String currentKey, Util.Commands.CommandBase cmd, System.String[] args) (at <b721b1c9aa564c1e822ba17ec375b0ec>:0)
+Util.Commands.CommandLine.Process (System.String[] args) (at <b721b1c9aa564c1e822ba17ec375b0ec>:0)
+Util.Commands.CommandLine.ProcessOnLaunch () (at <b721b1c9aa564c1e822ba17ec375b0ec>:0)
+
+15:40:38: Version : 0.2.4892.22208
+15:40:39: Loading settings: C:\stationeers
+15:41:14: loaded 46 systems successfully
+15:41:44: Loading save at: C:\stationeers\saves\XenonWorld
+15:41:44: game manager initialized
+15:41:51: World Loaded in 0:3
+15:41:51: Loaded World Settings.  Elapsed: 00:01 ( + 00:01)
+15:41:51: Loaded 71 Terrain Chunks in <1s (Elapsed: 00:01)
+15:41:51: Loaded 0 Networks in <1s (Elapsed: 00:01)
+15:41:51: Loaded 0 Rooms in <1s (Elapsed: 00:01)
+15:41:51: Loaded 78 Things in <1s (Elapsed: 00:02)
+15:41:51: Loaded 4 Atmospheres in <1s (Elapsed: 00:02)
+15:41:51: Initialized 0 Devices in <1s (Elapsed: 00:03)
+15:41:51: Loaded Mission Data in <1s (Elapsed: 00:03)
+15:41:51: Loaded TileSystem Data in <1s (Elapsed: 00:03)
+15:41:51: Checking for out of bounds objects
+15:41:51: RocketNet Succesfully hosted with Address: 192.168.238.1 Port: 27016
+15:41:51: attempting upnp mapping for '27016'
+15:41:52: started Server 27016
+15:41:52: Auto save stopped
+15:41:52: Auto save started (300)
+15:41:52: 0 days have passed. Your character has survived 0 without dying.
+15:41:53: loaded 'Europa' 78 things in 8693ms
+15:41:53: World load complete
+15:41:53: World  loaded
+15:41:53: No clients connected. Auto pause timer started (10000ms)
+Ready
+15:41:54: World Saved: C:/stationeers/saves/XenonWorld, BackupIndex: 4
+15:41:57: ...skipped '1' devices
+15:41:57: error failed to register '27016' using upnp
+15:42:03: Server Paused
