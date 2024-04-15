@@ -7,13 +7,22 @@ encoding: utf-8
 """
 
 
+class UpdateLoopError(Exception):
+    def __init__(self, message=None):
+        self.message = message
+        super().__init__(message)
+
+    def get_message(self):
+        return self.message
+
+
 class DigitalUnit:
     def __init__(self, name: str):
         """
         Represent the abstract part of a logic unit
         """
         self.name = name
-        self.max_value_counter = 10
+        self.max_value_counter = 50
 
         self.value = "0"
         self.value_counter = 0
@@ -43,7 +52,7 @@ class DigitalUnit:
 
         self.value_counter += 1
         if self.value_counter > self.max_value_counter:
-            raise Exception("TOO LONG")
+            raise UpdateLoopError(f"The value counter reached his maximum value: {self.max_value_counter}")
 
     def reset_value_counter(self):
         self.value_counter = 0
@@ -105,6 +114,15 @@ class PhysicalUnit(DigitalUnit):
                 new_list.append(output_unit)
         return new_list
 
+    def get_all_connected_unit(self):
+        """
+        Return all connected unit to this unit without this unit in the list if she is not connected to itself
+        with the help of another unit(s)
+        """
+        connected_unit = []
+        store_every_unit(connected_unit, self, True, True)
+        return connected_unit
+
     def set_input_unit(self, index: int, new_unit: DigitalUnit):
         current_unit = self.input_unit_list[index]
         if current_unit.get_name() != "NONE":
@@ -137,6 +155,14 @@ class PhysicalUnit(DigitalUnit):
             for output_unit in output_unit_list:
                 assert isinstance(output_unit, DigitalUnit), "This unit isn't a DigitalUnit !"
                 output_unit.update_value()
+
+    def disconnect(self) -> tuple:
+        disconnected_unit_list = []
+        for wire in self.get_input_unit_list() + self.get_all_output_unit():
+            if isinstance(wire, Wire):
+                wire.disconnect()
+                disconnected_unit_list.append(wire)
+        return tuple(disconnected_unit_list)
 
 
 class Pin(PhysicalUnit):
@@ -180,7 +206,7 @@ class Wire(PhysicalUnit):
     def copy(self):
         return Wire(self.name)
 
-    def get_connected_unit(self) -> tuple:
+    def get_directly_connected_unit(self) -> tuple:
         return self.unit_datas[0]["unit"], self.unit_datas[1]["unit"]
 
     def get_connection_types(self) -> tuple:
@@ -190,7 +216,7 @@ class Wire(PhysicalUnit):
         return self.unit_datas[0]["connection_index"], self.unit_datas[1]["connection_index"]
 
     def update_value(self):
-        unit_a, unit_b = self.get_connected_unit()
+        unit_a, unit_b = self.get_directly_connected_unit()
         assert isinstance(unit_a, PhysicalUnit), "This unit isn't a PhysicalUnit !"
         assert isinstance(unit_b, PhysicalUnit), "This unit isn't a PhysicalUnit !"
         connection_type_a, connection_type_b = self.get_connection_types()
@@ -252,10 +278,13 @@ class Wire(PhysicalUnit):
             else:
                 raise Exception("The unit isn't a PhysicalUnit")
 
-        self.update_value()
-        for unit in self.get_connected_unit():
-            assert isinstance(unit, PhysicalUnit), "This unit isn't a PhysicalUnit !"
-            unit.update_value()
+        try:
+            self.update_value()
+            for unit in self.get_directly_connected_unit():
+                assert isinstance(unit, PhysicalUnit), "This unit isn't a PhysicalUnit !"
+                unit.update_value()
+        except UpdateLoopError as err:
+            self.disconnect()
 
     def disconnect(self):
         for unit_data in self.unit_datas:
@@ -382,7 +411,7 @@ class Ship(PhysicalUnit):
 
     def copy(self):
         # Internal entity list: Pin, Wire, LogicalGate
-        internal_unit_list = self.get_every_unit()
+        internal_unit_list = self.get_every_internal_unit()
         # Création de la liste contenant la copie de chaque entitée
         internal_unit_list_copy = []
 
@@ -404,7 +433,7 @@ class Ship(PhysicalUnit):
 
             # Récupération des informations des fils et rangement dans link_list
             if isinstance(unit, Wire):
-                unit_a, unit_b = unit.get_connected_unit()
+                unit_a, unit_b = unit.get_directly_connected_unit()
                 connection_type_a, connection_type_b = unit.get_connection_types()
                 connection_index_a, connection_index_b = unit.get_connection_index()
                 unit_a_position = find_index_in_list(internal_unit_list, unit_a)
@@ -505,18 +534,18 @@ class Ship(PhysicalUnit):
         new_ship.make_internal_logic(internal_input_pin_list_copy, internal_output_pin_list_copy)
         return new_ship
 
-    def get_every_unit(self) -> list:
+    def get_every_internal_unit(self) -> list:
         internal_unit_list = []
         for input_unit in self.get_internal_input_unit_list():
             if isinstance(input_unit, PhysicalUnit):
                 internal_unit_list.append(input_unit)
-                store_every_unit(internal_unit_list, input_unit)
+                store_every_unit(internal_unit_list, input_unit, False, True)
             else:
                 raise Exception(f"The unit ({input_unit.get_name()}) isn't a pin !")
         return internal_unit_list
 
     def get_logic_unit(self) -> list:
-        logic_unit_list = self.get_every_unit()
+        logic_unit_list = self.get_every_internal_unit()
 
         i = 0
         while i < len(logic_unit_list):
@@ -528,7 +557,7 @@ class Ship(PhysicalUnit):
         return logic_unit_list
 
     def get_wires(self) -> list:
-        wire_list = self.get_every_unit()
+        wire_list = self.get_every_internal_unit()
 
         i = 0
         while i < len(wire_list):
@@ -544,7 +573,7 @@ class Ship(PhysicalUnit):
         result = ""
         for wire in wires:
             assert isinstance(wire, Wire), "The unit isn't a wire !"
-            unit_a, unit_b = wire.get_connected_unit()
+            unit_a, unit_b = wire.get_directly_connected_unit()
             connection_type_a, connection_type_b = wire.get_connection_types()
             if connection_type_a == "INPUT":
                 result += f"{unit_b.get_name()} connected to {unit_a.get_name()}\n"
@@ -642,13 +671,17 @@ class Ship(PhysicalUnit):
         self.update_value()
 
 
-def store_every_unit(unit_list: list, start_unit: PhysicalUnit):
-    for unit in start_unit.get_all_output_unit():
-        if unit.get_name() == "NONE":
-            continue
-        elif unit not in unit_list:
-            unit_list.append(unit)
-            store_every_unit(unit_list, unit)
+def store_every_unit(unit_list: list, start_unit: PhysicalUnit, take_in_input: bool, take_in_output: bool):
+    if take_in_input:
+        for unit in start_unit.get_input_unit_list():
+            if unit.get_name() != "NONE" and unit not in unit_list:
+                unit_list.append(unit)
+                store_every_unit(unit_list, unit, True, False)
+    if take_in_output:
+        for unit in start_unit.get_all_output_unit():
+            if unit.get_name() != "NONE" and unit not in unit_list:
+                unit_list.append(unit)
+                store_every_unit(unit_list, unit, False, True)
 
 
 def find_index_in_list(unit_list: list, unit: DigitalUnit) -> int:
@@ -672,25 +705,25 @@ def connect_wire(unit_a: PhysicalUnit, output_index: int,
     return wire
 
 
-def disconnect_wire(unit_a: PhysicalUnit, unit_b: PhysicalUnit) -> Wire:
-    unit_a__unit_list = unit_a.get_input_unit_list()
-    for output_unit_list in unit_a.get_all_output_unit_list():
-        for output_unit in output_unit_list:
-            unit_a__unit_list.append(output_unit)
-    unit_b__unit_list = unit_b.get_input_unit_list()
-    for output_unit_list in unit_b.get_all_output_unit_list():
-        for output_unit in output_unit_list:
-            unit_b__unit_list.append(output_unit)
+def get_wire(unit_a: PhysicalUnit, unit_b: PhysicalUnit) -> Wire:
+    unit_a__unit_list = unit_a.get_input_unit_list() + unit_a.get_all_output_unit()
+    unit_b__unit_list = unit_b.get_input_unit_list() + unit_b.get_all_output_unit()
 
     i = 0
     common_unit = DigitalUnit("NONE")
     while i < len(unit_a__unit_list) and common_unit.get_name() == "NONE":
         target_unit = unit_a__unit_list[i]
-        assert isinstance(target_unit, PhysicalUnit), "This unit isn't a PhysicalUnit !"
-        if target_unit.get_name() != "NONE" and target_unit in unit_b__unit_list:
-            common_unit = target_unit
+        if isinstance(target_unit, PhysicalUnit) and target_unit.get_name() != "NONE":
+            if target_unit in unit_b__unit_list:
+                common_unit = target_unit
+        i += 1
 
     assert isinstance(common_unit, Wire), "This unit isn't a wire !"
+    return common_unit
+
+
+def disconnect_wire(unit_a: PhysicalUnit, unit_b: PhysicalUnit) -> Wire:
+    common_unit = get_wire(unit_a, unit_b)
     common_unit.disconnect()
     return common_unit
 
@@ -733,7 +766,7 @@ def convert_ship_to_logic_gate(ship: Ship) -> LogicGate:
         wire = input_pin.get_input_unit(0)
         if isinstance(wire, Wire):
             # Stockage des data concernant les connections
-            unit_a, unit_b = wire.get_connected_unit()
+            unit_a, unit_b = wire.get_directly_connected_unit()
             connection_type_a, connection_type_b = wire.get_connection_types()
             connection_index_a, connection_index_b = wire.get_connection_index()
             if connection_type_a == "OUTPUT":
