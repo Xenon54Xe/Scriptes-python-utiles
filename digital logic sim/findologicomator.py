@@ -6,7 +6,7 @@ using: python 3.6
 encoding: utf-8
 """
 
-from unit_class import *
+from unit import *
 import random
 
 
@@ -14,7 +14,9 @@ class ConnectionFinder:
     def __init__(self):
         # Logic list
         self.input_logic_list = []
+        self.input_pin_count = -1
         self.output_logic_list = []
+        self.output_pin_count = -1
 
         # Allowed gates data
         self.allowed_unit = []
@@ -35,18 +37,87 @@ class ConnectionFinder:
             self.output_logic_list.append(text)
 
         self.allowed_unit = allowed_logic_gates
-
-    def make_a_functional_structure(self):
-        # Définition du nombre d'unitées utilisées
-        allowed_unit_counter = []
-        current_max_unit = self.current_max_unit
-        for i in range(len(self.allowed_unit)):
-            count = random.randint(0, current_max_unit)
-            allowed_unit_counter.append(count)
-
-        # Création des unitées
+        self.input_pin_count = len(self.input_logic_list[0])
+        self.output_pin_count = len(self.output_logic_list[0])
 
 
+def make_functional_structure(input_pin_count: int, output_pin_count: int, allowed_unit: list,
+                              max_unit_count_per_type: int):
+    # Création des pins d'entrée et de sortie
+    input_pin_list = []
+    output_pin_list = []
+    for i in range(input_pin_count):
+        new_pin = Pin(f"pin_in_{i}")
+        input_pin_list.append(new_pin)
+    for i in range(output_pin_count):
+        new_pin = Pin(f"pin_out_{i}")
+        output_pin_list.append(new_pin)
+
+    # Définition du nombre d'unitées utilisées par type
+    unit_counter = []
+    for i in range(len(allowed_unit)):
+        count = random.randint(0, max_unit_count_per_type)
+        unit_counter.append(count)
+
+    # Création des unitées
+    unit_list = []
+    for i in range(len(allowed_unit)):
+        unit = allowed_unit[i]
+        assert isinstance(unit, PhysicalUnit), "The unit isn't a PhysicalUnit !"
+        for j in range(unit_counter[i]):
+            new_unit = unit.copy()
+            new_unit.set_name(f"{unit.get_name()}_{j}")
+            unit_list.append(new_unit)
+    random.shuffle(unit_list)
+
+    """
+    Unit linking:
+    - pin output connected in their input pin
+    - pin input connected in their output pin
+    - other unit connected in both pin
+    """
+    """# Input pin connections
+    for input_pin in input_pin_list:
+        # Find a free input pin in unit
+        possible_unit_list = unit_list + output_pin_list
+        target = PhysicalUnit("NONE", 0, 0)
+        free_index_list = []
+        while len(free_index_list) == 0 and len(possible_unit_list) > 0:
+            index = random.randint(0, len(possible_unit_list) - 1)
+            target = possible_unit_list.pop(index)
+            free_index_list = target.get_free_input_index()
+        assert isinstance(target, PhysicalUnit), "This unit isn't a PhysicalUnit"
+        # Connect the input pin and the target
+        if len(target.get_free_input_index()) > 0:
+            random.shuffle(free_index_list)
+            connect_wire(input_pin, 0, target, free_index_list[0])"""
+
+    possible_unit_list = unit_list + input_pin_list
+    # Output pin connections
+    for output_pin in output_pin_list:
+        index = random.randint(0, len(possible_unit_list) - 1)
+        target = possible_unit_list[index]
+        assert isinstance(target, PhysicalUnit), "This unit isn't a PhysicalUnit !"
+        # Connect the output pin and the target
+        connection_index = random.randint(0, target.get_output_unit_list_count() - 1)
+        connect_wire(target, connection_index, output_pin, 0)
+
+    # Unit connections
+    for unit in unit_list:
+        assert isinstance(unit, PhysicalUnit), "This unit isn't a PhysicalUnit !"
+        while len(unit.get_free_input_index()) > 0:
+            target = unit
+            while target == unit:
+                index = random.randint(0, len(possible_unit_list) - 1)
+                target = possible_unit_list[index]
+            assert isinstance(target, PhysicalUnit), "This unit isn't a PhysicalUnit !"
+            # Connect the unit and the target
+            free_unit_index = unit.get_free_input_index()
+            random.shuffle(free_unit_index)
+            connection_index = random.randint(0, target.get_output_unit_list_count() - 1)
+            connect_wire(target, connection_index, unit, free_unit_index[0])
+
+    return input_pin_list, output_pin_list
 
 
 """
@@ -135,11 +206,68 @@ for cbln in make_all_bit_combination(2):
     print(x)
     print(y)
 """
-test = ConnectionFinder()
-logic = {
+
+and_logic = {
     "0 0": "0",
     "1 0": "0",
     "0 1": "0",
     "1 1": "1"
 }
-test.find_best_connections(logic)
+not_logic = {
+    "0": "1",
+    "1": "0"
+}
+nand_logic = {
+    "0 0": "1",
+    "0 1": "1",
+    "1 0": "1",
+    "1 1": "0"
+}
+or_logic = {
+    "0 0": "0",
+    "0 1": "1",
+    "1 0": "1",
+    "1 1": "1"
+}
+and_gate = LogicGate("AND", and_logic)
+not_gate = LogicGate("NOT", not_logic)
+nand_gate = LogicGate("NAND", nand_logic)
+or_gate = LogicGate("OR", or_logic)
+result = []
+all_combination = make_all_bit_combination(2)
+target = ["1", "0", "0", "1"]
+i = 0
+while result != target:
+    i += 1
+    if i % 1000 == 0:
+        print(f"Essai: {i}")
+    try:
+        # print("////////////")
+        result = []
+        input_pin, output_pin = make_functional_structure(2, 1, [nand_gate, or_gate, and_gate, not_gate], 1)
+        in_a, in_b = input_pin
+        out = output_pin[0]
+        mitsu = Ship("mistu", 2, 1)
+        mitsu.make_internal_logic(input_pin, output_pin)
+        """print([e.get_name() for e in input_pin])
+        print([e.get_name() for e in output_pin])
+        print(mitsu.get_connections())"""
+        for cbln in all_combination:
+            a, b = cbln
+            assert isinstance(in_a, Pin), "!"
+            assert isinstance(in_b, Pin), "!"
+            in_a.set_value(str(a))
+            in_b.set_value(str(b))
+            in_a.update_all_output_unit()
+            in_b.update_all_output_unit()
+            x = out.get_current_value()
+            result.append(x)
+        if result == target:
+            print(f"Essai: {i}")
+            print(mitsu.get_connections())
+        # print(result)
+    except Exception as exc:
+        if exc.args[0] == "TOO LONG":
+            print("TOO LONG")
+        else:
+            raise exc
