@@ -150,11 +150,9 @@ class PhysicalUnit(DigitalUnit):
         self.get_output_unit_list(output_unit_list_index).clear()
 
     def update_all_output_unit(self):
-        for output_unit_list_index in range(self.get_output_unit_list_count()):
-            output_unit_list = self.get_output_unit_list(output_unit_list_index)
-            for output_unit in output_unit_list:
-                assert isinstance(output_unit, DigitalUnit), "This unit isn't a DigitalUnit !"
-                output_unit.update_value()
+        for output_unit in self.get_all_output_unit():
+            assert isinstance(output_unit, DigitalUnit), "This unit isn't a DigitalUnit !"
+            output_unit.update_value()
 
     def disconnect(self) -> tuple:
         disconnected_unit_list = []
@@ -172,19 +170,12 @@ class Pin(PhysicalUnit):
         """
         super().__init__(name, 1, 1)
 
-        self.owner_ship = Ship("NONE", 0, 0)
-
     def copy(self):
         return Pin(self.name)
 
-    def get_owner_ship(self) -> PhysicalUnit:
-        return self.owner_ship
-
-    def set_owner_ship(self, ship):
-        self.owner_ship = ship
-
     def update_value(self):
         input_unit = self.get_input_unit(0)
+
         if input_unit.get_name() != "NONE":
             input_value = input_unit.get_current_value()
             if input_value != self.get_current_value():
@@ -283,6 +274,7 @@ class Wire(PhysicalUnit):
             for unit in self.get_directly_connected_unit():
                 assert isinstance(unit, PhysicalUnit), "This unit isn't a PhysicalUnit !"
                 unit.update_value()
+            self.update_value()
         except UpdateLoopError as err:
             self.disconnect()
 
@@ -396,19 +388,6 @@ class Ship(PhysicalUnit):
         self.internal_input_unit_list = []
         self.internal_output_unit_list = []
 
-        # Création des pins d'interface, et stockage comme pin input et output, ces pins ne doivent jamais être modifiés
-        # car ils permettent de créer les liens nécéssaires au fonctionnement du ship avec d'autres unitées branchées
-        # à lui
-        for i in range(input_unit_count):
-            new_pin = Pin(f"input_pin_{i}")
-            new_pin.set_owner_ship(self)
-            self.input_unit_list[i] = new_pin
-        for i in range(output_unit_count):
-            new_pin = Pin(f"output_pin_{i}")
-            new_pin.set_owner_ship(self)
-            current_list = self.output_unit_list_of_list[i]
-            current_list.append(new_pin)
-
     def copy(self):
         # Internal entity list: Pin, Wire, LogicalGate
         internal_unit_list = self.get_every_internal_unit()
@@ -421,7 +400,7 @@ class Ship(PhysicalUnit):
         internal_ship_list_copy = []
 
         # Création de la liste contenant les pins reliés a un ship déjà vue
-        internal_pin_owned_by_ship_list = []
+        internal_pin_in_ship_list = []
 
         # Création de la liste contenant les liens entre les entitées
         internal_link_list = []
@@ -449,27 +428,17 @@ class Ship(PhysicalUnit):
                     "connection_index_b": connection_index_b
                 }
                 internal_link_list.append(wire_data)
-
-            elif isinstance(unit, Pin):
-                # Récupération des informations des pins sur leurs owner_ship
-                owner_ship = unit.get_owner_ship()
-                if owner_ship.get_name() != "NONE":
-                    if unit not in internal_pin_owned_by_ship_list and owner_ship not in internal_ship_list:
-                        linked_pins = owner_ship.get_input_unit_list() + owner_ship.get_all_output_unit_list()
-                        internal_ship_list.append(owner_ship)
-                        internal_ship_list_copy.append(owner_ship.copy())
-                        internal_pin_owned_by_ship_list += linked_pins
-                internal_link_list.append(None)
-
             else:
                 internal_link_list.append(None)
 
         # Branchement des fils aux portes logiques et aux pins
         for i in range(len(internal_unit_list_copy)):
-            current_unit = internal_unit_list_copy[i]
+            current_unit_copy = internal_unit_list_copy[i]
 
-            if isinstance(current_unit, Wire):
+            if isinstance(current_unit_copy, Wire):
                 wire_data = internal_link_list[i]
+                assert isinstance(wire_data, dict), "This object isn't a dictionary !"
+
                 unit_a, unit_b = (internal_unit_list_copy[wire_data["unit_a_position"]],
                                   internal_unit_list_copy[wire_data["unit_b_position"]])
                 connection_type_a, connection_type_b = wire_data["connection_type_a"], wire_data["connection_type_b"]
@@ -485,39 +454,7 @@ class Ship(PhysicalUnit):
                     "connection_type": connection_type_b,
                     "connection_index": connection_index_b
                 }
-                current_unit.link_wire_to_unites(unit_data_a, unit_data_b)
-
-            # Liaison des ship a leurs pins
-            for ship_index in range(len(internal_ship_list)):
-                internal_ship = internal_ship_list[ship_index]
-                internal_ship_copy = internal_ship_list_copy[ship_index]
-                ship_input_pins = internal_ship.get_input_unit_list()
-                ship_output_pins = internal_ship.get_all_output_unit_list()
-
-                ship_input_pins_copy = []
-                ship_output_pins_copy = []
-                for pin in ship_input_pins:
-                    pin_index = find_index_in_list(internal_unit_list, pin)
-                    pin_copy = internal_unit_list_copy[pin_index]
-                    if isinstance(pin_copy, Pin):
-                        pin_copy.set_owner_ship(internal_ship_copy)
-                    else:
-                        raise Exception("The unit isn't a pin !")
-                    ship_input_pins_copy.append(pin_copy)
-
-                for pin in ship_output_pins:
-                    pin_index = find_index_in_list(internal_unit_list, pin)
-                    pin_copy = internal_unit_list_copy[pin_index]
-                    if isinstance(pin_copy, Pin):
-                        pin_copy.set_owner_ship(internal_ship_copy)
-                    else:
-                        raise Exception("The unit isn't a pin !")
-                    ship_output_pins_copy.append(pin_copy)
-
-                if isinstance(internal_ship_copy, Ship):
-                    internal_ship_copy.make_internal_logic(ship_input_pins_copy, ship_output_pins_copy)
-                else:
-                    raise Exception("The unit isn't a ship !")
+                current_unit_copy.link_wire_to_unites(unit_data_a, unit_data_b)
 
         # Création du nouveau ship
         new_ship = Ship(self.name, self.input_unit_count, self.output_unit_list_count)
@@ -526,10 +463,17 @@ class Ship(PhysicalUnit):
         internal_output_pin_list_copy = []
         for pin in self.internal_input_unit_list:
             pin_index = find_index_in_list(internal_unit_list, pin)
-            internal_input_pin_list_copy.append(internal_unit_list_copy[pin_index])
+            assert pin_index != -1, "The pin was not found on the list !"
+            pin_copy = internal_unit_list_copy[pin_index]
+            assert isinstance(pin_copy, Pin), "This unit isn't a Pin !"
+            internal_input_pin_list_copy.append(pin_copy)
+
         for pin in self.internal_output_unit_list:
             pin_index = find_index_in_list(internal_unit_list, pin)
-            internal_output_pin_list_copy.append(internal_unit_list_copy[pin_index])
+            assert pin_index != -1, "The pin was not found on the list !"
+            pin_copy = internal_unit_list_copy[pin_index]
+            assert isinstance(pin_copy, Pin), "This unit isn't a Pin !"
+            internal_output_pin_list_copy.append(pin_copy)
 
         new_ship.make_internal_logic(internal_input_pin_list_copy, internal_output_pin_list_copy)
         return new_ship
@@ -542,6 +486,14 @@ class Ship(PhysicalUnit):
                 store_every_unit(internal_unit_list, input_unit, False, True)
             else:
                 raise Exception(f"The unit ({input_unit.get_name()}) isn't a pin !")
+
+        for output_unit in self.get_internal_output_unit_list():
+            if isinstance(output_unit, PhysicalUnit):
+                internal_unit_list.append(output_unit)
+                store_every_unit(internal_unit_list, output_unit, True, False)
+            else:
+                raise Exception(f"The unit ({output_unit.get_name()}) isn't a pin !")
+
         return internal_unit_list
 
     def get_logic_unit(self) -> list:
@@ -596,9 +548,9 @@ class Ship(PhysicalUnit):
     def update_value(self):
         # Récupération des valeurs des pins d'entrée
         for i in range(self.input_unit_count):
-            interface_input_pin = self.get_input_unit(i)
-            assert isinstance(interface_input_pin, Pin), "This unit isn't a Pin !"
-            value = interface_input_pin.get_current_value()
+            interface_input_unit = self.get_input_unit(i)
+            assert isinstance(interface_input_unit, DigitalUnit), "This object isn't a DigitalUnit !"
+            value = interface_input_unit.get_current_value()
 
             internal_input_pin = self.get_internal_input_unit(i)
             assert isinstance(internal_input_pin, Pin), "This unit isn't a Pin !"
@@ -611,51 +563,22 @@ class Ship(PhysicalUnit):
             internal_output_pin = self.get_internal_output_unit(i)
             assert isinstance(internal_output_pin, Pin), "This unit isn't a Pin !"
             value = internal_output_pin.get_current_value()
-
-            interface_output_pin = self.get_output_unit(i, 0)
-            assert isinstance(interface_output_pin, Pin), "This unit isn't a Pin !"
-            interface_output_pin.set_value(value)
             output_string += f"{value} "
-        output_string = output_string[:-1]
+
+        if output_string != "":
+            output_string = output_string[:-1]
+        else:
+            raise Exception("output_string vide !")
 
         if output_string != self.get_current_value():
             self.set_value(output_string)
             # Mise a jour des valeurs dans les unitées branchées au ship
-            for output_unit_list in self.get_all_output_unit_list():
-                for output_unit in output_unit_list:
-                    output_unit.update_all_output_unit()
-
-    def set_input_unit(self, index: int, new_unit: DigitalUnit):
-        target_pin = self.get_input_unit(index)
-        if isinstance(target_pin, Pin):
-            target_pin.set_input_unit(0, new_unit)
-        else:
-            raise Exception("The target_pin isn't a pin !")
-
-    def add_output_unit(self, output_unit_list_index: int, new_unit: DigitalUnit):
-        target_pin = self.get_output_unit(output_unit_list_index, 0)
-        if isinstance(target_pin, Pin):
-            target_pin.add_output_unit(0, new_unit)
-        else:
-            raise Exception("The target_pin isn't a pin !")
-
-    def remove_input_unit(self, index: int):
-        target_pin = self.get_input_unit(index)
-        if isinstance(target_pin, Pin):
-            target_pin.remove_input_unit(0)
-        else:
-            raise Exception("The target_pin isn't a pin !")
-
-    def remove_output_unit(self, output_unit_list_index: int, unit: PhysicalUnit):
-        target_pin = self.get_output_unit(output_unit_list_index, 0)
-        if isinstance(target_pin, Pin):
-            target_pin.remove_output_unit(0, unit)
-        else:
-            raise Exception("The target_pin isn't a pin !")
+            for output_unit in self.get_all_output_unit():
+                output_unit.update_all_output_unit()
 
     def make_internal_logic(self, internal_input_unit_list: list, internal_output_unit_list: list):
-        assert len(internal_input_unit_list) == self.get_input_unit_count(), "Wrong wount !"
-        assert len(internal_output_unit_list) == self.get_output_unit_list_count(), "Wrong wount !"
+        assert len(internal_input_unit_list) == self.get_input_unit_count(), "Wrong count !"
+        assert len(internal_output_unit_list) == self.get_output_unit_list_count(), "Wrong count !"
 
         # Destruction des liens avec l'extérieur pour les pins internes
         for internal_input_pin in internal_input_unit_list:
@@ -665,8 +588,8 @@ class Ship(PhysicalUnit):
             assert isinstance(internal_output_pin, Pin), "This unit isn't a pin !"
             internal_output_pin.clear_output_unit_list(0)
 
-        self.internal_input_unit_list = internal_input_unit_list
-        self.internal_output_unit_list = internal_output_unit_list
+        self.internal_input_unit_list = internal_input_unit_list.copy()
+        self.internal_output_unit_list = internal_output_unit_list.copy()
 
         self.update_value()
 
@@ -756,53 +679,31 @@ def list_to_str(lst: list) -> str:
 
 
 def convert_ship_to_logic_gate(ship: Ship) -> LogicGate:
-    input_count = ship.get_input_unit_count()
-    input_unit_list = ship.get_input_unit_list()
-    new_pin_list = []
-
-    wire_data = []
-    for input_pin in input_unit_list:
-        assert isinstance(input_pin, Pin), "The unit isn't a pin !"
-        wire = input_pin.get_input_unit(0)
-        if isinstance(wire, Wire):
-            # Stockage des data concernant les connections
-            unit_a, unit_b = wire.get_directly_connected_unit()
-            connection_type_a, connection_type_b = wire.get_connection_types()
-            connection_index_a, connection_index_b = wire.get_connection_index()
-            if connection_type_a == "OUTPUT":
-                wire_data.append((unit_a, connection_index_a))
-            else:
-                wire_data.append((unit_b, connection_index_b))
-            # Déconnection des fils
-            wire.disconnect()
-        else:
-            wire_data.append(None)
-        # Connection avec les pin de test
-        new_pin = Pin(f"pin_{input_pin.get_name()}")
-        connect_wire(new_pin, 0, input_pin, 0)
-        new_pin_list.append(new_pin)
+    # Récupération des données
+    test_ship = ship.copy()
+    input_pin_count = test_ship.get_input_unit_count()
+    input_pin_list = []
+    for i in range(input_pin_count):
+        new_pin = Pin(f"value_pin_{i}")
+        connect_wire(new_pin, 0, test_ship, i)
+        input_pin_list.append(new_pin)
 
     # Partie test
-    bit_combination_list = make_all_bit_combination(input_count)
+    bit_combination_list = make_all_bit_combination(input_pin_count)
     logic_dict = {}
     for bit_combination in bit_combination_list:
+        for i in range(input_pin_count):
+            input_pin = input_pin_list[i]
+            assert isinstance(input_pin, Pin), "This unit isn't a Pin !"
+            input_pin.set_value(str(bit_combination[i]))
+            input_pin.update_all_output_unit()
+        value = test_ship.get_current_value()
+
         bit_combination_string = list_to_str(bit_combination)
-        for i in range(len(bit_combination)):
-            new_pin_list[i].set_value(bit_combination[i])
-        for i in range(len(bit_combination)):
-            new_pin_list[i].update_all_output_unit()
-        value = ship.get_current_value()
         logic_dict[bit_combination_string] = value
 
-    # Reconnection aux unitées d'avant
-    for i in range(input_count):
-        input_pin = input_unit_list[i]
-        assert isinstance(input_pin, Pin), "The unit isn't a pin !"
-        wire = input_pin.get_input_unit(0)
-        assert isinstance(wire, Wire), "The unit isn't a wire !"
-        wire.disconnect()
-        if wire_data[i] is not None:
-            unit, index = wire_data[i]
-            connect_wire(unit, index, input_pin, 0)
+    return LogicGate(f"{test_ship.get_name()}_LOGIC", logic_dict)
 
-    return LogicGate(ship.get_name(), logic_dict)
+
+def take_unit_name(unit_list: list):
+    return [e.get_name() for e in unit_list]

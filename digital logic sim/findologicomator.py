@@ -50,10 +50,6 @@ def get_free_to_connect_unit(unit_list: list) -> list:
     return free_to_connect_list
 
 
-def take_unit_name(unit_list: list):
-    return [e.get_name() for e in unit_list]
-
-
 class Mutate:
     def __init__(self):
         self.mutate_count = 0
@@ -113,16 +109,8 @@ class Mutate:
         if mutate_create_wire < wire_creation_luck:
             # Wire creation
 
-            """
-            Revoir la logique des connections de fils
-            """
-            if len(new_logic_unit_list) == 0:
-                mutate_from_input_pin = 1
-                mutate_from_output_pin = 1
-            else:
-                mutate_from_input_pin = random.random()
-                mutate_from_output_pin = random.random()
-
+            mutate_from_input_pin = random.random()
+            mutate_from_output_pin = random.random()
             if mutate_from_input_pin <= make_wire_from_input_pin_luck and mutate_from_output_pin <= make_wire_from_output_pin_luck:
                 # Connect an input to an output
                 output_pin_free_to_connect_list = get_free_to_connect_unit(output_pin_list)
@@ -378,8 +366,14 @@ for i in range(100):
                                    0.2, 0.3)
 
     input_pin_list_, output_pin_list_, all_unit_list_ = data
-    print("/////////////////////////////////////////")
-    print([e.get_name() for e in input_pin_list_])
-    print([e.get_name() for e in output_pin_list_])
-    print([e.get_name() for e in all_unit_list_])
+    mother_ship = Ship("MTS", 2, 1)
+    mother_ship.make_internal_logic(input_pin_list_, output_pin_list_)
+    print("Mother ship !!!")
+    mts = convert_ship_to_logic_gate(mother_ship)
+    print(mother_ship.get_connections())
+    print(mts.get_logic())
+
+    for unit in input_pin_list_ + output_pin_list_ + all_unit_list_:
+        assert isinstance(unit, DigitalUnit), "This unit isn't a DigitalUnit !"
+        unit.reset_value_counter()
     print()
