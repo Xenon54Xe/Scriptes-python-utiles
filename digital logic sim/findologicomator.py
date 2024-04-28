@@ -4,6 +4,14 @@ Creator: XenonEGG
 
 using: python 3.6
 encoding: utf-8
+
+In this script:
+uml = unit_make_luck
+ukl = unit_kill_luck
+wml = wire_make_luck
+wkl = wire_kill_luck
+wfi = wire_from_input_luck
+wfo = wire_from_output_luck
 """
 
 from unit import *
@@ -51,7 +59,17 @@ def get_free_to_connect_unit(unit_list: list) -> list:
 
 
 class Mutate:
-    def __init__(self):
+    def __init__(self, allowed_unit_list: list,
+                 uml: float, ukl: float, wml: float,
+                 wkl: float, wfi: float, wfo: float):
+        self.uml = uml
+        self.ukl = ukl
+        self.wml = wml
+        self.wkl = wkl
+        self.wfi = wfi
+        self.wfo = wfo
+
+        self.allowed_unit_list = allowed_unit_list
         self.mutation_count = 0
 
     def get_mutation_count(self) -> int:
@@ -202,14 +220,17 @@ class Mutate:
                 wire_list.remove(wire)
                 self.increment_mutation_count()
 
-    def mutate_structure(self, input_pin_list: list, output_pin_list: list, all_unit_list: list,
-                         allowed_logic_unit_list: list, unit_creation_luck: float, unit_destruction_luck: float,
-                         wire_creation_luck: float, wire_destruction_luck: float,
-                         wire_from_input_pin_luck: float, wire_from_output_pin_luck: float) -> tuple:
+    def mutate_structure(self, input_pin_list: list, output_pin_list: list, all_unit_list: list) -> tuple:
         """
         Take a list of unit and process some 'mutation' that represent the creation of a logic unit/wire
         or the destruction of logic unit/wire
+
+        Return a tuple composed of:
+        - input_pin_list
+        - output_pin_list
+        - all_unit_list (including input_pin_list and output_pin_list)
         """
+
         new_logic_unit_list = []
         new_wire_list = []
         for unit in all_unit_list:
@@ -221,7 +242,7 @@ class Mutate:
         # Définition du nombre d'unitées logiques détruites
         remove_unit_count = 0
         remove_unit_chance = random.random()
-        while remove_unit_chance < unit_destruction_luck:
+        while remove_unit_chance < self.ukl:
             remove_unit_count += 1
             remove_unit_chance = random.random()
         # Destruction des unitées logiques
@@ -230,16 +251,16 @@ class Mutate:
         # Définition du nombre d'unitées logiques ajoutées
         add_unit_count = 0
         add_unit_chance = random.random()
-        while add_unit_chance < unit_creation_luck:
+        while add_unit_chance < self.uml:
             add_unit_count += 1
             add_unit_chance = random.random()
         # Ajout des unitées logiques
-        self.add_logic_unit(new_logic_unit_list, allowed_logic_unit_list, add_unit_count)
+        self.add_logic_unit(new_logic_unit_list, self.allowed_unit_list, add_unit_count)
 
         # Définition du nombre de fils détruits
         remove_wire_count = 0
         remove_wire_chance = random.random()
-        while remove_wire_chance < wire_destruction_luck:
+        while remove_wire_chance < self.wkl:
             remove_wire_count += 1
             remove_wire_chance = random.random()
         # Destruction des fils
@@ -248,7 +269,7 @@ class Mutate:
         # Définition du nombre de fils créés
         add_wire_count = 0
         add_wire_chance = random.random()
-        while add_wire_chance < wire_creation_luck:
+        while add_wire_chance < self.wml:
             add_wire_count += 1
             add_wire_chance = random.random()
         # Définition des connexions crées
@@ -259,11 +280,11 @@ class Mutate:
         while add_wire_count > 0:
             from_in_chance = random.random()
             from_out_chance = random.random()
-            if from_in_chance < wire_from_input_pin_luck and from_out_chance < wire_from_output_pin_luck:
+            if from_in_chance < self.wfi and from_out_chance < self.wfo:
                 in_to_out_count += 1
-            elif from_in_chance < wire_from_input_pin_luck:
+            elif from_in_chance < self.wfi:
                 in_to_logic_count += 1
-            elif from_out_chance < wire_from_output_pin_luck:
+            elif from_out_chance < self.wfo:
                 logic_to_out_count += 1
             else:
                 logic_to_logic_count += 1
@@ -274,6 +295,25 @@ class Mutate:
 
         return input_pin_list, output_pin_list, input_pin_list + output_pin_list + new_logic_unit_list + new_wire_list
 
+    def mutate_ship(self, target_ship: Ship) -> Ship:
+        """
+        Take a ship, copy it, process some 'mutation' on the copy and return a mutated ship
+        """
+        ship_copy = target_ship.copy()
+
+        ship_copy_internal_input_pin = ship_copy.get_internal_input_pin_list()
+        ship_copy_internal_output_pin = ship_copy.get_internal_output_pin_list()
+        ship_copy_internal_unit = ship_copy.get_every_internal_unit()
+
+        mutated_tuple = self.mutate_structure(ship_copy_internal_input_pin, ship_copy_internal_output_pin,
+                                             ship_copy_internal_unit)
+
+        input_pin_list, output_pin_list, all_unit_list = mutated_tuple
+        new_ship = Ship(f"{target_ship.get_name()}_{self.get_mutation_count()}",
+                        target_ship.get_input_unit_count(), target_ship.get_output_unit_list_count())
+        new_ship.make_internal_logic(input_pin_list, output_pin_list)
+
+        return new_ship
 
 def make_functional_circuit(input_pin_count: int, output_pin_count: int, allowed_unit_data: dict) -> tuple:
     """
@@ -365,6 +405,38 @@ def take_name(unit_list: list) -> list:
     return name_list
 
 
+class GeneratePopulation:
+    def __init__(self, allowed_unit_list: list, uml: float, ukl: float,
+                 wml: float, wkl: float,
+                 wfi: float, wfo: float):
+        self.uml = uml
+        self.ukl = ukl
+        self.wml = wml
+        self.wkl = wkl
+        self.wfi = wfi
+        self.wfo = wfo
+
+        self.allowed_unit_list = allowed_unit_list
+        self.ship_prefab = None
+
+    def set_ship_prefab(self, new_ship: Ship):
+        self.ship_prefab = new_ship
+
+    def generate_population(self, count: int) -> list:
+        """
+        Return a list of ship with mutation representing the population created from ship_prefab
+        """
+        assert isinstance(self.ship_prefab, Ship), ("You need te set the unit_prefab "
+                                                    "before generate a population from it!")
+        new_ship_list = []
+        mutate = Mutate(self.allowed_unit_list, self.uml, self.ukl, self.wml, self.wkl, self.wfi, self.wfo)
+        for i in range(count):
+            new_ship = mutate.mutate_ship(self.ship_prefab)
+            new_ship_list.append(new_ship)
+
+        return new_ship_list
+
+
 and_logic = {
     "0 0": "0",
     "1 0": "0",
@@ -397,6 +469,18 @@ pin_in_a = Pin("in_a")
 pin_in_b = Pin("in_b")
 pin_out = Pin("out")
 
+connect_wire(pin_in_a, 0, nand_gate, 0)
+connect_wire(pin_in_b, 0, nand_gate, 1)
+connect_wire(nand_gate, 0, pin_out, 0)
+
+nand_ship = Ship("NAND_ship", 2, 1)
+nand_ship.make_internal_logic([pin_in_a, pin_in_b], [pin_out])
+print(nand_ship.get_internal_connections())
+nand_ship_copy = nand_ship.copy()
+print(nand_ship_copy.get_internal_connections())
+
+
+"""
 input_pin_list_ = [pin_in_a, pin_in_b]
 output_pin_list_ = [pin_out]
 all_unit_list_ = input_pin_list_ + output_pin_list_
@@ -423,3 +507,4 @@ for i in range(100):
         assert isinstance(unit, DigitalUnit), "This unit isn't a DigitalUnit !"
         unit.reset_update_counter()
     print()
+"""
