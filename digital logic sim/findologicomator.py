@@ -18,44 +18,16 @@ from unit import *
 import random
 
 
-class ConnectionFinder:
-    def __init__(self):
-        # Logic list
-        self.input_logic_list = []
-        self.input_pin_count = -1
-        self.output_logic_list = []
-        self.output_pin_count = -1
-
-        # Allowed gates data
-        self.allowed_unit = []
-        self.allowed_unit_counter = []
-        self.current_max_unit = 1
-
-    def find_best_connections(self, logic_dictionary: dict, allowed_logic_gates: list):
-        # Création des list d'input et d'output
-        self.input_logic_list.clear()
-        self.output_logic_list.clear()
-        keys = logic_dictionary.keys()
-        values = logic_dictionary.values()
-        for key in keys:
-            text = key.split(" ")
-            self.input_logic_list.append(text)
-        for value in values:
-            text = value.split(" ")
-            self.output_logic_list.append(text)
-
-        self.allowed_unit = allowed_logic_gates
-        self.input_pin_count = len(self.input_logic_list[0])
-        self.output_pin_count = len(self.output_logic_list[0])
-
-
 class Mutate:
     def __init__(self, allowed_unit_list: list,
-                 max_add_unit_count: float,
-                 max_add_wire_count: float,
                  uml: float, ukl: float,
                  wml: float, wkl: float,
-                 wfi: float, wfo: float):
+                 wfi: float, wfo: float,
+                 max_add_unit_count: int = 0,
+                 max_remove_unit_count: int = -1,
+                 max_add_wire_count: int = -1,
+                 max_remove_wire_count: int = -1,
+                 ):
         self.uml = uml
         self.ukl = ukl
         self.wml = wml
@@ -63,9 +35,12 @@ class Mutate:
         self.wfi = wfi
         self.wfo = wfo
 
-        # Allow to control the maximum of unit and wire created for every ship
+        # Allow to control the maximum of unit and wire created/destructed for every ship
+        assert max_add_unit_count >= 0, f"Wrong count ! ({max_add_unit_count})"
         self.max_add_unit_count = max_add_unit_count
+        self.max_remove_unit_count = max_remove_unit_count
         self.max_add_wire_count = max_add_wire_count
+        self.max_remove_wire_count = max_remove_wire_count
 
         # A list of logic unit (LogicGate or Ship)
         self.allowed_unit_list = allowed_unit_list
@@ -200,7 +175,6 @@ class Mutate:
                             wire = connect_wire(output_logic_unit, output_connection_index,
                                                 input_logic_unit, input_connection_index)
                         except RecursionError as err:
-                            print(err.args)
                             continue
                         except Exception as exc:
                             raise exc
@@ -240,25 +214,21 @@ class Mutate:
             elif not isinstance(unit, Pin):
                 logic_unit_list.append(unit)
 
-        # Variables utiles
-        logic_unit_count = len(logic_unit_list)
-        max_add_unit_count = self.max_add_unit_count
-        wire_count = len(wire_list)
-        max_add_wire_count = self.max_add_wire_count
-
         # Définition du nombre d'unitées logiques détruites
         remove_unit_count = 0
-        remove_unit_chance = random.random()
-        while remove_unit_count < logic_unit_count and remove_unit_chance < self.ukl:
-            remove_unit_count += 1
+        for i in range(len(logic_unit_list)):
             remove_unit_chance = random.random()
+            if remove_unit_chance < self.ukl:
+                remove_unit_count += 1
+        if self.max_remove_unit_count != -1 and remove_unit_count > self.max_remove_unit_count:
+            remove_unit_count = self.max_remove_unit_count
         # Destruction des unitées logiques
         self.remove_unit(logic_unit_list, wire_list, remove_unit_count)
 
         # Définition du nombre d'unitées logiques ajoutées
         add_unit_count = 0
         add_unit_chance = random.random()
-        while add_unit_count < max_add_unit_count and add_unit_chance < self.uml:
+        while add_unit_count < self.max_add_unit_count and add_unit_chance < self.uml:
             add_unit_count += 1
             add_unit_chance = random.random()
         # Ajout des unitées logiques
@@ -266,16 +236,21 @@ class Mutate:
 
         # Définition du nombre de fils détruits
         remove_wire_count = 0
-        remove_wire_chance = random.random()
-        while remove_wire_count < wire_count and remove_wire_chance < self.wkl:
-            remove_wire_count += 1
+        for i in range(len(wire_list)):
             remove_wire_chance = random.random()
+            if remove_wire_chance < self.wkl:
+                remove_wire_count += 1
+        if self.max_remove_wire_count != -1 and remove_wire_count > self.max_remove_wire_count:
+            remove_wire_count = self.max_remove_wire_count
         # Destruction des fils
         self.remove_wire(wire_list, remove_wire_count)
 
         # Définition du nombre de fils créés
         add_wire_count = 0
         add_wire_chance = random.random()
+        max_add_wire_count = self.max_add_wire_count
+        if max_add_wire_count == -1:
+            max_add_wire_count = get_free_to_connect_pin_count(logic_unit_list)
         while add_wire_count < max_add_wire_count and add_wire_chance < self.wml:
             add_wire_count += 1
             add_wire_chance = random.random()
@@ -325,12 +300,17 @@ class Mutate:
 
 class GeneratePopulation(Mutate):
     def __init__(self, allowed_unit_list: list,
-                 max_add_unit_count: float,
-                 max_add_wire_count: float,
                  uml: float, ukl: float,
                  wml: float, wkl: float,
-                 wfi: float, wfo: float):
-        super().__init__(allowed_unit_list, max_add_unit_count, max_add_wire_count, uml, ukl, wml, wkl, wfi, wfo)
+                 wfi: float, wfo: float,
+                 max_add_unit_count: int = 0,
+                 max_remove_unit_count: int = -1,
+                 max_add_wire_count: int = -1,
+                 max_remove_wire_count: int = -1,
+                 ):
+        super().__init__(allowed_unit_list, uml, ukl, wml, wkl, wfi, wfo,
+                         max_add_unit_count, max_remove_unit_count,
+                         max_add_wire_count, max_remove_wire_count)
 
         self.ship_prefab = None
 
@@ -354,43 +334,60 @@ class GeneratePopulation(Mutate):
         return new_ship_list
 
 
-def evaluate(ship: Ship, target_logic: dict):
+def get_matching_bit_count(logic: dict, reference: dict):
+    count = 0
+    for key in reference.keys():
+        reference_res_str = reference[key]
+        if reference_res_str != "x":
+            reference_res_list = reference_res_str.split(" ")
+            logic_res_list = logic[key].split(" ")
+            for i in range(len(reference_res_list)):
+                logic_res = logic_res_list[i]
+                reference_res = reference_res_list[i]
+                if logic_res == reference_res:
+                    count += 1
+    return count
+
+
+def evaluate(evaluated_ship: Ship, reference: dict, given_points: dict):
     """
+    The ship and the reference need to have the same count of in pin
+
     given_points:
     Possible keys       -       logic                               ->      params
-    clc                 -       x * common_logic_count              ->      (x)
-    clsc                -       x * common_logic_shape_count        ->      (x)
+    lm                  -       + x if logic match                  ->      (x)
+    clc                 -       + x * matching_logic_count          ->      (x)
+    mbc                 -       + x * matching_bit_count            ->      (x)
     """
 
     # Points
     points = 0
-    clc_pts = 20
-    clsc_pts = 40
+    lm_pts = given_points["lm"]
+    mlc_pts = given_points["mlc"]
+    mbc_pts = given_points["mbc"]
 
     # Ship logic
-    ship_logic = convert_ship_to_logic_gate(ship).get_logic()
-    if ship_logic == target_logic:
-        points += 1000
+    evaluated_ship_logic = convert_ship_to_logic_gate(evaluated_ship).get_logic()
+    if evaluated_ship_logic == reference:
+        points += lm_pts
 
     """
     Evaluation
     """
-    keys = list(target_logic.keys())
+    keys = list(reference.keys())
     for i in range(len(keys)):
         key = keys[i]
 
-        # clc
-        target_result = target_logic[key]
-        result = ship_logic[key]
-        if result == target_result:
-            points += clc_pts
+        # mlc
+        ref_result = reference[key]
+        if ref_result != "x":
+            ship_result = evaluated_ship_logic[key]
+            if ship_result == ref_result:
+                points += mlc_pts
 
-        # clsc
-        if i < len(keys) - 1:
-            key_a = keys[i+1]
-            target_result_a, result_a = target_logic[key_a], ship_logic[key_a]
-            if (result, result_a) == (target_result, target_result_a):
-                points += clsc_pts
+    # mlc
+    count = get_matching_bit_count(evaluated_ship_logic, reference)
+    points += count * mbc_pts
 
     return points
 
@@ -467,7 +464,7 @@ def make_functional_circuit(input_pin_count: int, output_pin_count: int, allowed
                     # the unit
                     connect_wire(target, connection_index, unit, free_unit_index[0])
                 except RecursionError as err:
-                    print(err.args)
+                    pass
                 except Exception as exc:
                     raise exc
                 if unit in unit.get_all_connected_unit():
@@ -494,15 +491,61 @@ def get_free_to_connect_unit(unit_list: list) -> list:
     return free_to_connect_list
 
 
+def get_free_to_connect_pin_count(unit_list: list) -> int:
+    count = 0
+    for unit in get_free_to_connect_unit(unit_list):
+        assert isinstance(unit, PhysicalUnit), "This unit isn't a PhysicalUnit !"
+        count += len(unit.get_free_input_index())
+    return count
+
+
+def get_x_last(lst: list, x: int):
+    maxi = min(len(lst), x + 1)
+    new_lst = []
+    for i in range(1, maxi):
+        new_lst.insert(0, lst[-i])
+    return new_lst
+
+
+def show_matching_bit(target: dict, reference: dict):
+    new_dict = {}
+    for key in reference.keys():
+        reference_res_str = reference[key]
+        if reference_res_str != "x":
+            reference_res_list = reference_res_str.split(" ")
+            logic_res_list = target[key].split(" ")
+            value = ""
+            for i in range(len(reference_res_list)):
+                logic_res = logic_res_list[i]
+                reference_res = reference_res_list[i]
+                if logic_res == reference_res:
+                    value += "_ "
+                else:
+                    value += "X "
+            value = value[:-1]
+            new_dict[key] = value
+    return new_dict
+
+
 # Définition du problème:
-# Créer un circuit qui fait la même logique qu'un NAND
-xor_logic = {
-    "0 0": "0",
-    "1 0": "1",
-    "0 1": "1",
-    "1 1": "0"
-}
-target_logic = xor_logic
+# Créer un circuit qui fait la même logique qu'un XOR
+display_logic = {'0 0 0 0': '1 1 1 1 1 1 0',
+                 '0 0 0 1': '0 1 1 0 0 0 0',
+                 '0 0 1 0': '1 1 0 1 1 0 1',
+                 '0 0 1 1': '1 1 1 1 0 0 1',
+                 '0 1 0 0': '0 1 1 0 0 1 1',
+                 '0 1 0 1': '1 0 1 1 0 1 1',
+                 '0 1 1 0': '1 0 1 1 1 1 1',
+                 '0 1 1 1': '1 1 1 0 0 0 O',
+                 '1 0 0 0': '1 1 1 1 1 1 1',
+                 '1 0 0 1': '1 1 1 1 0 1 1',
+                 '1 0 1 0': 'x',
+                 '1 0 1 1': 'x',
+                 '1 1 0 0': 'x',
+                 '1 1 0 1': 'x',
+                 '1 1 1 0': 'x',
+                 '1 1 1 1': 'x'}
+target_logic = display_logic
 
 # Logiques utilisables:
 
@@ -526,68 +569,71 @@ nand_logic = {
 and_gate = LogicGate("AND", and_logic)
 not_gate = LogicGate("NOT", not_logic)
 nand_gate = LogicGate("NAND", nand_logic)
-in_pin_a, in_pin_b, out_pin = Pin("INA"), Pin("INB"), Pin("OUT")
+in_a, in_b, in_c, in_d = Pin("in A"), Pin("in B"), Pin("in B"), Pin("in C")
+out_a, out_b, out_c, out_d, out_e, out_f, out_g = (Pin("out A"), Pin("out B"), Pin("out C"), Pin("out D"),
+                                                   Pin("out E"), Pin("out F"), Pin("out G"),)
 
 # Création du ship a faire muter
-ship_prefab = Ship("ShipPrefab", 2, 1)
-ship_prefab.make_internal_logic([in_pin_a, in_pin_b], [out_pin])
+ship_prefab = Ship("ShipPrefab", 4, 7)
+ship_prefab.make_internal_logic([in_a, in_b, in_c, in_d],
+                                [out_a, out_b, out_c, out_d, out_e, out_f, out_g])
 
 # Proposition de valeurs de probabilités
 # 0.5, 0.1, 1, 0.5, 0.2, 0.3
-pop_gen = GeneratePopulation([nand_gate], 1, 20, 0.5, 0.1, 1, 0.9,
-                             0.2, 0.3)
+pop_gen = GeneratePopulation([nand_gate], 0.3, 0.15, 0.85, 0.3,
+                             0.2, 0.3, 10, 10)
 
 # Processing
-generation_count = 100
-greater_number = 0
-best_ship_list = [ship_prefab]
+generation_count = 5000
 
-time = 0
-target_logic_number = 1
+greater_number = 0
+
+best_ship_list = [ship_prefab]
 best_logic = {}
+
+given_points = {
+    "lm": 10000,
+    "mlc": 200,
+    "mbc": 20
+}
+max_mbc = 70
 while best_logic != target_logic:
-    if time % 3 == 0:
-        target_logic_number += 1
-    time += 1
-    given_points = {
-        "clc": 100,
-        "clsc": 300,
-        "luc": (30, target_logic_number)
-    }
-    print(target_logic_number)
+    print("##########################################")
     children_per_ship = generation_count // len(best_ship_list)
 
     current_generation = []
     for best_ship in best_ship_list:
         pop_gen.set_ship_prefab(best_ship)
         current_generation += [best_ship] + pop_gen.generate_population(children_per_ship)
-    print(current_generation)
-    print(get_all_unit_name(current_generation))
 
-    points_dict = {}
-    points_list = []
+    ship_points_dict = {}
+    ship_points_list = []
     for ship in current_generation:
         assert isinstance(ship, Ship), "This isn't a ship !"
-        print("//////////")
-        print(ship.get_name())
-        print(ship.get_internal_connections())
         pts = evaluate(ship, target_logic, given_points)
-        if pts not in points_list:
-            points_dict[pts] = [ship]
-            points_list.append(pts)
+        if pts not in ship_points_list:
+            ship_points_dict[pts] = [ship]
+            ship_points_list.append(pts)
         else:
-            points_dict[pts] += [ship]
-        print(pts)
+            ship_points_dict[pts] += [ship]
 
-    points_list = sorted(points_list)
-    greater_number = points_list[-1]
-    best_ship_list = points_dict[greater_number]
+    ship_points_list = sorted(ship_points_list)
+    ten_last = get_x_last(ship_points_list, 5)
+    best_ship_list = []
+    for i in ten_last:
+        best_ship_list += ship_points_dict[i]
+    best_logic = convert_ship_to_logic_gate(best_ship_list[-1]).get_logic()
+    current_mbc = get_matching_bit_count(best_logic, target_logic)
+    print(best_logic)
+    print(show_matching_bit(best_logic, target_logic))
+    print(best_ship_list[-1].get_internal_connections())
+    print(current_mbc / max_mbc)
+    print(ship_points_list[-1])
 
-    print(get_all_unit_name(best_ship_list))
-    best_logic = convert_ship_to_logic_gate(best_ship_list[-1])
 
-print("######################")
+print("//////////////////////////////")
 best_ship = best_ship_list[-1]
 print(best_ship.get_name())
+print(best_logic)
 print(best_ship.get_internal_connections())
 print(greater_number)
