@@ -4,16 +4,9 @@ Creator: XenonEGG
 
 using: python 3.6
 encoding: utf-8
+
+Try to avoid as possible the creation of loop with wires because this could make error
 """
-
-
-class UpdateLoopError(Exception):
-    def __init__(self, message=None):
-        self.message = message
-        super().__init__(message)
-
-    def get_message(self):
-        return self.message
 
 
 class DigitalUnit:
@@ -22,10 +15,7 @@ class DigitalUnit:
         Represent the abstract part of a logic unit
         """
         self.name = name
-        self.max_update_count = 50
-
         self.value = "0"
-        self.update_counter = 0
 
     def copy(self):
         return DigitalUnit(self.name)
@@ -36,26 +26,14 @@ class DigitalUnit:
     def get_current_value(self) -> str:
         return self.value
 
-    def get_update_counter(self) -> int:
-        return self.update_counter
-
     def set_name(self, new_name: str):
         self.name = new_name
-
-    def set_max_update_count(self, maximum: int):
-        assert maximum >= 0, "Maximum need to be positive !"
-        self.max_update_count = maximum
 
     def set_value(self, new_value: str):
         self.value = new_value
 
-    def reset_update_counter(self):
-        self.update_counter = 0
-
     def update_value(self):
-        self.update_counter += 1
-        if self.update_counter > self.max_update_count:
-            raise UpdateLoopError(f"The value counter reached his maximum value: {self.max_update_count}")
+        pass
 
 
 class PhysicalUnit(DigitalUnit):
@@ -185,13 +163,10 @@ class Pin(PhysicalUnit):
 
     def update_value(self):
         input_unit = self.get_input_unit(0)
-
         if input_unit.get_name() != "NONE":
             input_value = input_unit.get_current_value()
             if input_value != self.get_current_value():
                 self.set_value(input_value)
-                super().update_value()
-
                 self.update_all_output_unit()
 
 
@@ -257,14 +232,18 @@ class Wire(PhysicalUnit):
             else:
                 raise Exception("The unit isn't a PhysicalUnit !")
 
+        connected_units = self.get_wire_connected_unit()
         try:
             self.update_value()
-            for unit in self.get_wire_connected_unit():
+            for unit in connected_units:
                 assert isinstance(unit, PhysicalUnit), "This unit isn't a PhysicalUnit !"
                 unit.update_value()
             self.update_value()
-        except UpdateLoopError as err:
+        except RecursionError as err:
             self.disconnect()
+            for unit in connected_units:
+                assert isinstance(unit, PhysicalUnit), "This unit isn't a PhysicalUnit !"
+                unit.update_value()
             raise err
         except Exception as exc:
             raise exc
@@ -282,6 +261,7 @@ class Wire(PhysicalUnit):
                 raise Exception("The unit isn't a PhysicalUnit !")
 
         for unit in self.get_wire_connected_unit():
+            assert isinstance(unit, DigitalUnit), "This unit isn't a DigitalUnit !"
             unit.update_value()
 
         self.unit_datas = []
@@ -308,8 +288,6 @@ class Wire(PhysicalUnit):
 
         if output_value != self.get_current_value():
             self.set_value(output_value)
-            super().update_value()
-
             self.update_all_output_unit()
 
 
@@ -391,8 +369,6 @@ class LogicGate(PhysicalUnit):
 
         if output_string != self.get_current_value():
             self.set_value(output_string)
-            super().update_value()
-
             self.update_all_output_unit()
 
 
@@ -641,8 +617,6 @@ class Ship(PhysicalUnit):
 
         if output_string != self.get_current_value():
             self.set_value(output_string)
-            super().update_value()
-
             # Mise a jour des valeurs dans les unitées branchées au ship
             for output_unit in self.get_all_output_unit():
                 output_unit.update_all_output_unit()
