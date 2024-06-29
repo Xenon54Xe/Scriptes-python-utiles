@@ -1,0 +1,4 @@
+setvar test 3
+setvar arbre 4
+mul new test pi
+add neww test arbre
