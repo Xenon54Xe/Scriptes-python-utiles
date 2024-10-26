@@ -124,12 +124,61 @@ def fp(ly):
     return -np.sqrt(k1*a), 2 * np.sqrt(k1*a) - k2*b - k3*b*c, k2*b - k3*b*c, k3*b*c
 
 
-y0 = [1.4, 0, 0, 0]
-t = np.linspace(0, 2, 10000)
-y = integral_equation_diff_n(fp, y0, t)
-plt.plot(t, y[:, 0])
-plt.plot(t, y[:, 1])
-plt.plot(t, y[:, 2])
-plt.plot(t, y[:, 3])
-plt.legend("abcd")
+def differential_calcul(differential_coefficients: list, initial_conditions: list, nb_rows: int, simulation_time: float,
+                        second_member_constant: float):
+    """
+    The differential equation need to give a unitary polynom in the characteristic equation
+    """
+    assert len(differential_coefficients) == len(initial_conditions) - 1, "Only nb_column-1 coefficients are needed"
+
+    # Init
+    dt = simulation_time / nb_rows
+
+    # Creation of the board
+    nb_column = len(initial_conditions)
+    board = np.zeros((nb_rows, nb_column))
+
+    # Differential equation motor
+    def f(previous_row):
+        previous_row = list(previous_row)
+        greatest_derivation_value = second_member_constant
+        for i in range(len(differential_coefficients)):
+            current_coefficient = differential_coefficients[i]
+            greatest_derivation_value -= current_coefficient * previous_row[i]
+        new_row = previous_row[:-1].copy()
+        new_row.append(greatest_derivation_value)
+        return new_row
+
+    # Board filling
+    board[0] = initial_conditions
+    # From row 1 to last row
+    for i in range(1, nb_rows):
+        next_row = f(board[i-1])
+
+        # From last column-1 to first column
+        for j in range(nb_column-2, -1, -1):
+            j_value = board[i-1][j] + next_row[j+1] * dt
+            next_row[j] = j_value
+        board[i] = next_row
+    return board
+
+
+def get_f(board):
+    n, m = board.shape
+    l = []
+    for i in range(n):
+        l.append(board[i][0])
+    return l
+
+
+nb_lig = 1000
+time = 20
+boardd = differential_calcul([1], [5, 0], nb_lig, time, 0)
+print(boardd)
+
+y = get_f(boardd)
+
+x = np.linspace(0, time, nb_lig)
+
+plt.plot(x, y)
 plt.show()

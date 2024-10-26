@@ -1,5 +1,5 @@
 """
-Unit visual descriptor
+Logic unit visual descriptor
 """
 
 import math as m
@@ -40,7 +40,11 @@ class UnitVisual:
 
         new_vectorial_list = [vectorial_list[0]]
         current_x = 0
+        # Adaptation des coordonnees des points pour l'image et position relative des vectorials
         for cur_vectorial in vectorial_list:
+            def f(pt):
+
+
             f = lambda pt: (m.floor(pt[0] + current_x), m.floor(pt[1]))
             new_vectorial = td.modify_vectorial(f, cur_vectorial)
             width = td.get_width(new_vectorial)
@@ -93,10 +97,15 @@ class UnitVisual:
         """
         return self.vectorial
 
+    def get_step_to_centralize_vectorial(self):
+        step_width = - self.total_width / 2
+        step_height = self.total_height / 2
+        return step_width, step_height
+
 
 test = UnitVisual("and", 2, 1, 200)
-im = np.ones((1000, 1000, 3), dtype=np.uint8) * 255
-td.trace_picture(im, test.get_vectorial(), (500, 500), 10, (0, 0, 0))
+im = np.ones((300, 300, 3), dtype=np.uint8) * 255
+td.trace_picture(im, test.get_vectorial(), (150, 150), 50, (0, 0, 0))
 im = td.rotate_90(im)
 plt.imshow(im)
 plt.show()
