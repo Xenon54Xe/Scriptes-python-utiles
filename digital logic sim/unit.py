@@ -383,7 +383,7 @@ class LogicGate(PhysicalUnit):
         # Number of different input logic states possible
         self.logic_count = -1
 
-        self.make_unit()  # set: input/output pin count, logic count
+        self._make_unit()  # set: input/output pin count, logic count
 
         super().__init__(name, self.input_unit_count, self.output_unit_list_count)
 
@@ -392,7 +392,7 @@ class LogicGate(PhysicalUnit):
     def copy(self):
         return LogicGate(self.name, self.logic)
 
-    def make_unit(self):
+    def _make_unit(self):
         """
         Make the logic unit according to his logic dictionary
         """
@@ -468,6 +468,10 @@ class Ship(PhysicalUnit):
     def __init__(self, name: str, input_unit_count: int, output_unit_count: int):
         """
         Represent a more complex unit composed of other unit
+
+        To make the internal logic you need to first connect pin that will represent inputs and pin that will
+        represent outputs to other logic ship, then make a list of input pins and a list of output pins and call the
+        function 'make_internal_logic'
 
         The internal unit are only the one connected to the internal input/output of the ship
         """

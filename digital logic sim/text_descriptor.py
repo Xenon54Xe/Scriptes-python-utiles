@@ -14,8 +14,6 @@ A character is represented by a vectorial that is a list of multi-lines
 A multi-line is a list of points
 """
 
-# Récupération des caractères
-
 
 def split_text_with_index(text: str, index_list: list) -> list:
     """
@@ -109,24 +107,35 @@ def get_evaluation_of(text: str):
         return get_number_of(text), "number"
 
 
-"""
-Recovery of character's data
-"""
-characters_dict = {}
-with open("characters.csv", "r", encoding="utf-8") as file:
-    data = file.read()
-    lines = data.split("\n")
-    for i in range(1, len(lines)):
-        line = lines[i]
-        character, style, text_vectorial = line.split(";")
-        characters_dict[(character, style)] = get_evaluation_of(text_vectorial)[0]
-
-
 def get_character_vectorial(car: str, style: str) -> list:
     """
     Return the vectorial, that represent geometrically a character
     """
     return characters_dict[(car, style)]
+
+
+def convert_vectorial_tuple_to_vector(vectorial: list) -> list:
+    """
+    Return the vectorial with vector instead of points
+    """
+    new_vectorial = []
+    for i in range(len(vectorial)):
+        multiline = vectorial[i]
+        new_multiline = []
+        for j in range(len(multiline)):
+            last_tuple = multiline[j]
+            new_point = Vector(f"point_{i}_{j}", last_tuple[0], last_tuple[1])
+            new_multiline.append(new_point)
+        new_vectorial.append(new_multiline)
+    return new_vectorial
+
+
+def get_character_vectorial_vector(car: str, style: str) -> list:
+    """
+    Return a vectorial representing the character with vector
+    """
+    car_vectorial = get_character_vectorial(car, style)
+    return convert_vectorial_tuple_to_vector(car_vectorial)
 
 
 def get_points(vectorial: list) -> list:
@@ -170,10 +179,11 @@ def get_height(vectorial: list) -> float:
 
 def trace_quadrant_est(im, point_a: Vector, point_b: Vector, color: tuple):
     """
-    Draw a line between two points in an image from west to est
+    Draw a line between two points in an image from west to est, each points need to have integer
+    coordinates supported by the image
     """
-    xa, ya = point_a.get_coords()
-    xb, yb = point_b.get_coords()
+    xa, ya = point_a.get_coordinates()
+    xb, yb = point_b.get_coordinates()
     dx = xb - xa
     dy = yb - ya
     im[xa, ya] = (0, 0, 0)
@@ -186,10 +196,11 @@ def trace_quadrant_est(im, point_a: Vector, point_b: Vector, color: tuple):
 
 def trace_quadrant_south(im, point_a: Vector, point_b: Vector, color: tuple):
     """
-    Draw a line between two points in an image from north to south
+    Draw a line between two points in an image from north to south, each points need to have integer
+    coordinates supported by the image
     """
-    xa, ya = point_a.get_coords()
-    xb, yb = point_b.get_coords()
+    xa, ya = point_a.get_coordinates()
+    xb, yb = point_b.get_coordinates()
     dx = xb - xa
     dy = yb - ya
     im[xa, ya] = (0, 0, 0)
@@ -202,10 +213,10 @@ def trace_quadrant_south(im, point_a: Vector, point_b: Vector, color: tuple):
 
 def trace_line(im, point_a: Vector, point_b: Vector, color: tuple):
     """
-    Draw a line between two points
+    Draw a line between two points, each points need to have integer coordinates supported by the image
     """
-    xa, ya = point_a.get_coords()
-    xb, yb = point_b.get_coords()
+    xa, ya = point_a.get_coordinates()
+    xb, yb = point_b.get_coordinates()
     dx = xb - xa
     dy = yb - ya
     if abs(dx) > abs(dy):
@@ -236,7 +247,7 @@ def rotate_90(im):
 def trace_vectorial(im, vectorial: list, color: tuple):
     """
     Draw a vectorial on an image (the coordinates of each points of the vectorial will be the coordinates
-    on the image)
+    on the image), every points need to have integer coordinates, only supported by the image
     """
     for multiline in vectorial:
         for i in range(len(multiline) - 1):
@@ -266,7 +277,7 @@ def set_height_vectorial(vectorial: list, wanted_height: float) -> list:
     factor = wanted_height / height
 
     def f(pt: Vector):
-        x, y = pt.get_coords()
+        x, y = pt.get_coordinates()
         nx = m.floor(x * factor)
         ny = m.floor(y * factor)
         return Vector(pt.get_name(), nx, ny)
@@ -277,7 +288,7 @@ def set_height_vectorial(vectorial: list, wanted_height: float) -> list:
 
 def get_normalised_vectorial(vectorial: list) -> list:
     """
-    Return a vectorial where all the points are in the quarter north est of a geometric reference
+    Return a vectorial where all the points are in the quarter north est of the geometric reference
     """
     points = get_points(vectorial)
     x_list = get_all_coordinate(points, 0)
@@ -285,7 +296,10 @@ def get_normalised_vectorial(vectorial: list) -> list:
     min_x = min(x_list)
     min_y = min(y_list)
     step = Vector("step_a", -min_x, -min_y)
-    f = lambda pt: pt + step
+
+    def f(pt: Vector):
+        return pt + step
+
     vectorial = modify_vectorial(f, vectorial)
     return vectorial
 
@@ -293,19 +307,22 @@ def get_normalised_vectorial(vectorial: list) -> list:
 def trace_car(im, car: str, style: str, po: Vector, wanted_height: float, color: tuple) -> float:
     """
     Draw a character on an image at the position of <po> (bottom left corner of the vectorial)
-    and the height of <wanted_height> for this character
+    and the height of <wanted_height> for this character, every points need to have integer coordinates
+    supported by the image
     """
-    vectorial = get_character_vectorial(car, style)
+    vectorial = get_character_vectorial_vector(car, style)
     vectorial = set_height_vectorial(vectorial, wanted_height)
     width = get_width(vectorial)
 
     points = get_points(vectorial)
     min_x = min(get_all_coordinate(points, 0))
     min_y = min(get_all_coordinate(points, 1))
-    xo, yo = po.get_coords()
+    xo, yo = po.get_coordinates()
 
     step = Vector("step_b", xo - min_x, yo - min_y)
-    f = lambda pt: pt + step
+
+    def f(pt):
+        return pt + step
 
     vectorial = modify_vectorial(f, vectorial)
     trace_vectorial(im, vectorial, color)
@@ -315,7 +332,7 @@ def trace_car(im, car: str, style: str, po: Vector, wanted_height: float, color:
 def trace_word(im, word: str, style: str, start_po: Vector, wanted_height: float, step: float, color: tuple) -> float:
     """
     Draw a word on an image where the characters have a fixed height and the bottom left corner of the word
-    will be at position <start_po>
+    will be at position <start_po>, every points need to have integer coordinates supported by the image
     Return the size of the word
     """
     current_po = start_po
@@ -335,22 +352,37 @@ def trace_word(im, word: str, style: str, start_po: Vector, wanted_height: float
 
 def trace_picture(im, picture_vectorial: list, start_po: Vector, wanted_height: float, color: tuple):
     """
-    Draw a picture on an image like a character
+    Draw a picture on an image like a character, every points need to have integer coordinates supported by the image
+
+    The vectorial will not be normalised, so, if needed, normalise the vectorial before calling this function
     """
-    picture_vectorial = get_normalised_vectorial(picture_vectorial)
     picture_vectorial = set_height_vectorial(picture_vectorial, wanted_height)
-    xo, yo = start_po.get_coords()
-    step = Vector("step_d", xo, yo)
-    f = lambda pt: pt + step
+
+    def f(pt):
+        return pt + start_po
+
     picture_vectorial = modify_vectorial(f, picture_vectorial)
     trace_vectorial(im, picture_vectorial, color)
 
 
 def get_rectangle(point_a: Vector, point_b: Vector):
     """
-    Return a rectangle that passes through <point_a> and <point_b>
+    Return a rectangle that passes through <point_a> and <point_b> (vectorial with vector)
     """
-    xa, ya = point_a.get_coords()
-    xb, yb = point_b.get_coords()
+    xa, ya = point_a.get_coordinates()
+    xb, yb = point_b.get_coordinates()
     vectorial = [[(xa, ya), (xb, ya), (xb, yb), (xa, yb), (xa, ya)]]
-    return vectorial
+    return convert_vectorial_tuple_to_vector(vectorial)
+
+
+"""
+Recovery of character's data
+"""
+characters_dict = {}
+with open("characters.csv", "r", encoding="utf-8") as file:
+    data = file.read()
+    lines = data.split("\n")
+    for ind in range(1, len(lines)):
+        line = lines[ind]
+        character, sty, text_vectorial = line.split(";")
+        characters_dict[(character, sty)] = get_evaluation_of(text_vectorial)[0]
