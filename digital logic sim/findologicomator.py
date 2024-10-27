@@ -14,7 +14,7 @@ wfi = wire_from_input_luck
 wfo = wire_from_output_luck
 """
 
-from unit import *
+from unit_behavior import *
 import random
 
 

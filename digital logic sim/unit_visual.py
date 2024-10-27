@@ -5,11 +5,11 @@ Logic unit visual descriptor
 import math as m
 import numpy as np
 import matplotlib.pyplot as plt
-import text_descriptor as td
-from vector_class import Vector
+import text_visual as tv
+from vector import Vector
 
 
-class UnitVisual:
+class LogicUnitVisual:
     def __init__(self, name: str, input_count: int, output_count: int,
                  size_between_letters_factor: float, size_between_letters_and_rectangle_factor: float,
                  pins_size_factor: float, size_between_pins_and_rectangle_factor: float):
@@ -57,10 +57,10 @@ class UnitVisual:
         vectorial_list = []
         total_letters_width = 0
         for letter in self.name:
-            vectorial = td.get_character_vectorial_vector(letter, "square")
-            vectorial = td.set_height_vectorial(vectorial, 200)
-            vectorial = td.get_normalised_vectorial(vectorial)
-            total_letters_width += td.get_width(vectorial)
+            vectorial = tv.get_character_vectorial_vector(letter, "square")
+            vectorial = tv.set_height_vectorial(vectorial, 200)
+            vectorial = tv.get_normalised_vectorial(vectorial)
+            total_letters_width += tv.get_width(vectorial)
 
             vectorial_list.append(vectorial)
 
@@ -78,8 +78,8 @@ class UnitVisual:
                 pt += step_vector
                 new_vector = Vector("point", m.floor(pt[0]), m.floor(pt[1]))
                 return new_vector
-            new_vectorial = td.modify_vectorial(f, cur_vectorial)
-            width = td.get_width(new_vectorial)
+            new_vectorial = tv.modify_vectorial(f, cur_vectorial)
+            width = tv.get_width(new_vectorial)
             new_vectorial_list.append(new_vectorial)
             current_x += width + step_between_letters
 
@@ -89,9 +89,9 @@ class UnitVisual:
                          m.floor(-step_between_rectangle_and_letters))
         point_b = Vector("point_b", m.floor(total_width + step_between_rectangle_and_letters),
                          m.floor(200 + step_between_rectangle_and_letters))
-        rectangle_vectorial = td.get_rectangle(point_a, point_b)
-        self.total_width = td.get_width(rectangle_vectorial)
-        self.total_height = td.get_height(rectangle_vectorial)
+        rectangle_vectorial = tv.get_rectangle(point_a, point_b)
+        self.total_width = tv.get_width(rectangle_vectorial)
+        self.total_height = tv.get_height(rectangle_vectorial)
 
         # Creation of the vectorial that contain every character and the rectangle
         main_vectorial = []
@@ -99,7 +99,7 @@ class UnitVisual:
             for multiline in vectorial:
                 main_vectorial.append(multiline)
 
-        self.vectorial = td.get_normalised_vectorial(main_vectorial)
+        self.vectorial = tv.get_normalised_vectorial(main_vectorial)
 
     def _make_input_and_output_vectorial(self):
         """
@@ -128,7 +128,7 @@ class UnitVisual:
                                  m.floor(point_zero[1] + i * dist_between_input - pin_size))
                 point_b = Vector("point_b", m.floor(point_zero[0] + pin_size),
                                  m.floor(point_zero[1] + i * dist_between_input + pin_size))
-                new_rectangle = td.get_rectangle(point_a, point_b)
+                new_rectangle = tv.get_rectangle(point_a, point_b)
                 self.vectorial.append(new_rectangle[0])
 
         """
@@ -149,7 +149,7 @@ class UnitVisual:
                                  m.floor(point_zero[1] + i * dist_between_output - pin_size))
                 point_b = Vector("point_b", m.floor(point_zero[0] + pin_size),
                                  m.floor(point_zero[1] + i * dist_between_output + pin_size))
-                new_rectangle = td.get_rectangle(point_a, point_b)
+                new_rectangle = tv.get_rectangle(point_a, point_b)
                 self.vectorial.append(new_rectangle[0])
 
     def get_vectorial(self):
@@ -168,6 +168,9 @@ class UnitVisual:
         """
         Return a list of points representing the center of each input,
         each point's length will be divided by the height of the unit (normalisation)
+
+        If you want to have the true position of the pins in the image,
+        multiply every point by the <wanted_height> of the unit in the image
         """
         new_list = []
         for point in self.input_coordinates_list:
@@ -178,11 +181,34 @@ class UnitVisual:
         """
         Return a list of points representing the center of each output,
         each point's length will be divided by the height of the unit (normalisation)
+
+        If you want to have the true position of the pins in the image,
+        multiply every point by the <wanted_height> of the unit in the image
         """
         new_list = []
         for point in self.output_coordinates_list:
             new_list.append(point / self.total_height)
         return new_list
+
+
+class WireVisual:
+    def __init__(self, name: str, start_point: Vector, end_point: Vector):
+        """
+        A class to make quickly a wire between two points
+        """
+        self.name = name
+        self.start_point = start_point
+        self.end_point = end_point
+
+    def get_standard_vectorial(self):
+        """
+        Return a vectorial that represent a wire with two corner max
+        """
+        xa, ya = self.start_point.get_coordinates()
+        xb, yb = self.end_point.get_coordinates()
+        x_mid = (xa + xb) // 2
+        lst = [[(xa, ya), (x_mid, ya), (x_mid, yb), (xb, yb)]]
+        return tv.convert_vectorial_tuple_to_vector(lst)
 
 
 """
@@ -191,24 +217,51 @@ Example
 if __name__ == '__main__':
     # Creation of the unit visual
     wanted_height = 50
-    test = UnitVisual("and", 2, 1,
-                      0.5, 0.7,
-                      0.1, 0.1, )
+    unit = LogicUnitVisual("and", 2, 1,
+                           0.5, 0.7,
+                           0.1, 0.1, )
 
     # Creation of the image
-    im = np.ones((120, 55, 3), dtype=np.uint8) * 255
+    im = np.ones((300, 150, 3), dtype=np.uint8) * 255
 
-    # Drawing the unit on the image
-    start_point = Vector("po", 20, 2)
-    td.trace_picture(im, test.get_vectorial(), start_point, wanted_height, (0, 0, 0))
+    # Draw the unit on the image
+    unit_start_point = Vector("po", 75, 50)
+    tv.trace_picture(im, unit.get_vectorial(), unit_start_point, wanted_height, (0, 0, 0))
 
-    # Drawing points on the image
-    for coord in test.get_input_coordinates_normalised() + test.get_output_coordinates_normalised():
-        coord *= wanted_height
-        pos = coord.get_floored_vector()
-        td.trace_line(im, pos + start_point, pos + start_point, (0, 0, 0))
+    # Draw points on the image
+    for point in unit.get_input_coordinates_normalised() + unit.get_output_coordinates_normalised():
+        point *= wanted_height
+        pos = point.get_floored_vector()
+        tv.trace_line(im, pos + unit_start_point, pos + unit_start_point, (0, 0, 0))
 
-    # Image showing
-    im = td.rotate_90(im)
+    # Draw wire on the image (bottom left pin)
+    point_a = Vector("zero", 0, 50)
+    point_b = unit_start_point + unit.get_input_coordinates_normalised()[0] * wanted_height
+    point_b = point_b.get_floored_vector()
+
+    wire = WireVisual("wire", point_a, point_b)
+    vect = wire.get_standard_vectorial()
+    tv.trace_vectorial(im, vect, (255, 0, 0))
+
+    # Draw wire on the image (top left pin)
+    point_a = Vector("zero", 0, 125)
+    point_b = unit_start_point + unit.get_input_coordinates_normalised()[1] * wanted_height
+    point_b = point_b.get_floored_vector()
+
+    wire = WireVisual("wire", point_a, point_b)
+    vect = wire.get_standard_vectorial()
+    tv.trace_vectorial(im, vect, (255, 0, 0))
+
+    # Draw wire on the image (right pin)
+    point_a = Vector("zero", 250, 0)
+    point_b = unit_start_point + unit.get_output_coordinates_normalised()[0] * wanted_height
+    point_b = point_b.get_floored_vector()
+
+    wire = WireVisual("wire", point_b, point_a)
+    vect = wire.get_standard_vectorial()
+    tv.trace_vectorial(im, vect, (255, 0, 0))
+
+    # Show image
+    im = tv.rotate_90(im)
     plt.imshow(im)
     plt.show()

@@ -7,7 +7,7 @@ encoding: utf-8
 """
 import math as m
 import numpy as np
-from vector_class import Vector
+from vector import Vector
 
 """
 A character is represented by a vectorial that is a list of multi-lines
@@ -186,8 +186,8 @@ def trace_quadrant_est(im, point_a: Vector, point_b: Vector, color: tuple):
     xb, yb = point_b.get_coordinates()
     dx = xb - xa
     dy = yb - ya
-    im[xa, ya] = (0, 0, 0)
-    im[xb, yb] = (0, 0, 0)
+    im[xa, ya] = color
+    im[xb, yb] = color
     for i in range(1, dx):
         nx = xa + i
         ny = m.floor(ya + dy / dx * i)
@@ -203,8 +203,8 @@ def trace_quadrant_south(im, point_a: Vector, point_b: Vector, color: tuple):
     xb, yb = point_b.get_coordinates()
     dx = xb - xa
     dy = yb - ya
-    im[xa, ya] = (0, 0, 0)
-    im[xb, yb] = (0, 0, 0)
+    im[xa, ya] = color
+    im[xb, yb] = color
     for i in range(1, dy):
         ny = ya + i
         nx = m.floor(xa + dx / dy * i)
